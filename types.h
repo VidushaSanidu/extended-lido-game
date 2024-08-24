@@ -20,6 +20,12 @@ typedef struct {
     int passed_approach[PIECES]; // Track how many times each piece has passed the Approach cell
 } Player;
 
+typedef struct {
+    Player players[PLAYERS];
+    int front;
+    int rear;
+} PlayerQueue;
+
 void pre_message();
 void initialize_game(Player players[PLAYERS]);
 int roll_dice();

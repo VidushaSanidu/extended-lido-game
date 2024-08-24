@@ -3,6 +3,8 @@
 #include <time.h>
 #include "types.h"
 
+Player firstMove;
+
 const int START_POINTS[PLAYERS] = {50, 11, 24, 37}; // Starting positions for Y, B, R, G
 const int APPROACH_POSITIONS[PLAYERS] = {0, 13, 26, 39}; // Last cell before home straight for Y, B, R, G
 const int HOME_ENTRIES[PLAYERS] = {51, 12, 25, 38}; // First position in the home straight for Y, B, R, G
@@ -30,6 +32,16 @@ void initialize_game(Player players[PLAYERS]) {
         players[i].pieces_in_home = 0;
         players[i].consecutive_sixes = 0; // Initialize consecutive sixes counter
     }
+
+    int max = 0;
+    int value = 0;
+    for (int i = 0; i < PLAYERS; i++) {
+        value = roll_dice();
+        if (value > max) {
+            max = value;
+        }
+    }
+
 }
 
 void print_board(Player players[PLAYERS]) {
@@ -138,4 +150,32 @@ void capture_piece(Player players[PLAYERS], int current_player, int position) {
             }
         }
     }
+}
+
+// player queue implementation
+
+void initializeQueue(PlayerQueue *q) {
+    q->front = -1;
+    q->rear = -1;
+}
+
+void enqueue(PlayerQueue *q, Player player) {
+        if (q->front == -1) {
+            q->front = 0;
+        }
+        q->rear++;
+        q->players[q->rear] = player;
+    
+}
+
+Player dequeue(PlayerQueue *q) {
+    Player player;
+
+    player = q->players[q->front];
+    q->front++;
+    if (q->front > q->rear) {
+        q->front = q->rear = -1; 
+    }
+    return player;
+    
 }
