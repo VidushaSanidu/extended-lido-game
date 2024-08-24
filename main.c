@@ -5,16 +5,13 @@
 
 int main()
 {
-
     PlayerQueue playerQueue;
-    int current_player = 0;
-    int winner = -1;
     srand(time(NULL));
 
     // before game begins
     pre_message();
 
-    initialize_game();
+    initialize_game(&playerQueue);
 
     // while (winner == -1)
     // {

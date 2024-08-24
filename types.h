@@ -22,12 +22,13 @@ typedef struct {
 
 typedef struct {
     Player players[PLAYERS];
-    int front;
-    int rear;
+    int current;
 } PlayerQueue;
 
 void pre_message();
-void initialize_game();
+void initialize_game(PlayerQueue *q);
+void initializeQueue(PlayerQueue *q);
+
 int roll_dice();
 void move_piece(Player* player, int piece_index, int roll, Player players[PLAYERS], int current_player);
 int can_move_from_base(Player* player, int roll);

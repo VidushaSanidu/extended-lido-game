@@ -3,62 +3,66 @@
 #include <time.h>
 #include "types.h"
 
-Player firstMove;
-
-const int START_POINTS[PLAYERS] = {50, 11, 24, 37}; // Starting positions for Y, B, R, G
+const int START_POINTS[PLAYERS] = {50, 11, 24, 37};      // Starting positions for Y, B, R, G
 const int APPROACH_POSITIONS[PLAYERS] = {0, 13, 26, 39}; // Last cell before home straight for Y, B, R, G
-const int HOME_ENTRIES[PLAYERS] = {51, 12, 25, 38}; // First position in the home straight for Y, B, R, G
+const int HOME_ENTRIES[PLAYERS] = {51, 12, 25, 38};      // First position in the home straight for Y, B, R, G
 
-const char* colorNames[] = {
+const char *colorNames[] = {
     "YELLOW",
     "BLUE",
     "RED",
-    "GREEN"
-};
+    "GREEN"};
 
-void pre_message(){
+void pre_message()
+{
     printf("\n-------Welcome to Ludo CS-------\n\n");
     for (int i = 0; i < PLAYERS; i++)
     {
-        printf("The %s player has four (04) pieces named %c1, %c2, %c3, and %c4.\n",colorNames[i], colorNames[i][0], colorNames[i][0], colorNames[i][0], colorNames[i][0]);
+        printf("The %s player has four (04) pieces named %c1, %c2, %c3, and %c4.\n", colorNames[i], colorNames[i][0], colorNames[i][0], colorNames[i][0], colorNames[i][0]);
     }
 }
 
-void initialize_game() {
-    // for (int i = 0; i < PLAYERS; i++) {
-    //     for (int j = 0; j < PIECES; j++) {
-    //         players[i].pieces[j] = -1; // All pieces start in base
-    //     }
-    //     players[i].pieces_in_home = 0;
-    //     players[i].consecutive_sixes = 0; // Initialize consecutive sixes counter
-    // }
-
+void initialize_game(PlayerQueue *queue)
+{
     int maxValue = 0;
     int maxIndex = 0;
     int value = 0;
 
-    for (int i = 0; i < PLAYERS; i++) {
+    for (int i = 0; i < PLAYERS; i++)
+    {
         value = roll_dice();
-        printf("%s rolls %d \n", colorNames[i],value);
-        if (value > maxValue) {
+        printf("%s rolls %d \n", colorNames[i], value);
+        if (value > maxValue)
+        {
             maxValue = value;
             maxIndex = i;
         }
     }
     printf("\n%s player has the highest roll and will begin the game.\n", colorNames[maxIndex]);
-    printf("The order of a single round is %s, %s, %s, and %s.\n", colorNames[maxIndex],colorNames[(maxIndex + 1) % 4],colorNames[(maxIndex + 2) % 4],colorNames[(maxIndex + 3) % 4]);
 
+    initializeQueue(queue);
+    queue->current = maxIndex;
+
+    printf("The order of a single round is %s, %s, %s, and %s.\n", colorNames[maxIndex], colorNames[(maxIndex + 1) % 4], colorNames[(maxIndex + 2) % 4], colorNames[(maxIndex + 3) % 4]);
 }
 
-void print_board(Player players[PLAYERS]) {
-    for (int i = 0; i < PLAYERS; i++) {
+void print_board(Player players[PLAYERS])
+{
+    for (int i = 0; i < PLAYERS; i++)
+    {
         printf("Player %d pieces: ", i + 1);
-        for (int j = 0; j < PIECES; j++) {
-            if (players[i].pieces[j] == -1) {
+        for (int j = 0; j < PIECES; j++)
+        {
+            if (players[i].pieces[j] == -1)
+            {
                 printf("Base ");
-            } else if (players[i].pieces[j] == WINNING_POSITION) {
+            }
+            else if (players[i].pieces[j] == WINNING_POSITION)
+            {
                 printf("Home ");
-            } else {
+            }
+            else
+            {
                 printf("%d ", players[i].pieces[j]);
             }
         }
@@ -66,14 +70,19 @@ void print_board(Player players[PLAYERS]) {
     }
 }
 
-int roll_dice() {
+int roll_dice()
+{
     return (rand() % 6) + 1;
 }
 
-int can_move_from_base(Player* player, int roll) {
-    if (roll == 6) {
-        for (int i = 0; i < PIECES; i++) {
-            if (player->pieces[i] == -1) {
+int can_move_from_base(Player *player, int roll)
+{
+    if (roll == 6)
+    {
+        for (int i = 0; i < PIECES; i++)
+        {
+            if (player->pieces[i] == -1)
+            {
                 return 1; // Can move a piece out of base
             }
         }
@@ -108,7 +117,7 @@ int can_move_from_base(Player* player, int roll) {
 //             } else {
 //                 printf("Player %d needs an exact roll of %d to reach home, move not possible.\n", current_player + 1, needed_roll);
 //             }
-//         } 
+//         }
 //         // Handle movement counterclockwise on the board
 //         else if (current_pos == APPROACH_POSITIONS[current_player]) {
 //             player->passed_approach[piece_index]++;
@@ -141,15 +150,21 @@ int can_move_from_base(Player* player, int roll) {
 //     }
 // }
 
-int has_won(Player* player) {
+int has_won(Player *player)
+{
     return player->pieces_in_home == PIECES;
 }
 
-void capture_piece(Player players[PLAYERS], int current_player, int position) {
-    for (int i = 0; i < PLAYERS; i++) {
-        if (i != current_player) { // Check only opponent players
-            for (int j = 0; j < PIECES; j++) {
-                if (players[i].pieces[j] == position) { // Opponent's piece is at the same position
+void capture_piece(Player players[PLAYERS], int current_player, int position)
+{
+    for (int i = 0; i < PLAYERS; i++)
+    {
+        if (i != current_player)
+        { // Check only opponent players
+            for (int j = 0; j < PIECES; j++)
+            {
+                if (players[i].pieces[j] == position)
+                { // Opponent's piece is at the same position
                     printf("Player %d's piece %d captured by Player %d!\n", i + 1, j + 1, current_player + 1);
                     players[i].pieces[j] = -1; // Send opponent's piece back to base
                 }
@@ -158,30 +173,24 @@ void capture_piece(Player players[PLAYERS], int current_player, int position) {
     }
 }
 
-// player queue implementation
+// players data structure
 
-void initializeQueue(PlayerQueue *q) {
-    q->front = -1;
-    q->rear = -1;
-}
+void initializeQueue(PlayerQueue *q)
+{
+    q->current = 0;
 
-void enqueue(PlayerQueue *q, Player player) {
-        if (q->front == -1) {
-            q->front = 0;
-        }
-        q->rear++;
-        q->players[q->rear] = player;
-    
-}
-
-Player dequeue(PlayerQueue *q) {
-    Player player;
-
-    player = q->players[q->front];
-    q->front++;
-    if (q->front > q->rear) {
-        q->front = q->rear = -1; 
+    for (int i = 0; i < PLAYERS; i++)
+    {
+        // for (int i = 0; i < PLAYERS; i++) {
+        //     for (int j = 0; j < PIECES; j++) {
+        //         players[i].pieces[j] = -1; // All pieces start in base
+        //     }
+        // }
+        q->players[i].pieces_in_home = 4;
+        q->players[i].consecutive_sixes = 0;
     }
-    return player;
-    
+    q->players[0].color = YELLOW;
+    q->players[1].color = BLUE;
+    q->players[2].color = RED;
+    q->players[3].color = GREEN;
 }
