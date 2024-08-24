@@ -24,23 +24,29 @@ void pre_message(){
     }
 }
 
-void initialize_game(Player players[PLAYERS]) {
-    for (int i = 0; i < PLAYERS; i++) {
-        for (int j = 0; j < PIECES; j++) {
-            players[i].pieces[j] = -1; // All pieces start in base
-        }
-        players[i].pieces_in_home = 0;
-        players[i].consecutive_sixes = 0; // Initialize consecutive sixes counter
-    }
+void initialize_game() {
+    // for (int i = 0; i < PLAYERS; i++) {
+    //     for (int j = 0; j < PIECES; j++) {
+    //         players[i].pieces[j] = -1; // All pieces start in base
+    //     }
+    //     players[i].pieces_in_home = 0;
+    //     players[i].consecutive_sixes = 0; // Initialize consecutive sixes counter
+    // }
 
-    int max = 0;
+    int maxValue = 0;
+    int maxIndex = 0;
     int value = 0;
+
     for (int i = 0; i < PLAYERS; i++) {
         value = roll_dice();
-        if (value > max) {
-            max = value;
+        printf("%s rolls %d \n", colorNames[i],value);
+        if (value > maxValue) {
+            maxValue = value;
+            maxIndex = i;
         }
     }
+    printf("\n%s player has the highest roll and will begin the game.\n", colorNames[maxIndex]);
+    printf("The order of a single round is %s, %s, %s, and %s.\n", colorNames[maxIndex],colorNames[(maxIndex + 1) % 4],colorNames[(maxIndex + 2) % 4],colorNames[(maxIndex + 3) % 4]);
 
 }
 

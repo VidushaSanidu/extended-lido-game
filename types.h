@@ -27,7 +27,7 @@ typedef struct {
 } PlayerQueue;
 
 void pre_message();
-void initialize_game(Player players[PLAYERS]);
+void initialize_game();
 int roll_dice();
 void move_piece(Player* player, int piece_index, int roll, Player players[PLAYERS], int current_player);
 int can_move_from_base(Player* player, int roll);
