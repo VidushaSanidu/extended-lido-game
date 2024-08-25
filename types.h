@@ -28,13 +28,12 @@ typedef enum
     YELLOW,
     BLUE,
     RED,
-    GREEN
+    GREEN,
+    DEFAULT
 } PlayerColor;
 typedef enum
 {
     BASIC,
-    START,
-    APPROCH,
     MYSTERY,
     BHAWANA,
     KOTUWA,
@@ -86,7 +85,7 @@ typedef struct
 {
     CellType type;
     int noOfPiece;
-    PlayerColor relatedColor;
+    PlayerColor currentColor;
 } Cell;
 
 // functions
