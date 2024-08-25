@@ -58,7 +58,7 @@ typedef struct
     Status status;
     int direction;
     int capturedPieces;
-    int homeCount;
+    int toWin;
     int approchCount;
     int isBlocked;
     int blockDirection;

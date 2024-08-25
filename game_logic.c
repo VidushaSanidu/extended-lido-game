@@ -14,7 +14,7 @@ const char *colorNames[] = {
     "GREEN"
     };
 
-PlayerColor getColor(int num){
+PlayerColor get_color(int num){
     if (num == 0) return YELLOW;
     else if (num == 1) return BLUE;
     else if (num == 1) return BLUE;
@@ -89,21 +89,22 @@ void initialize_board()
 void initializeQueue(PlayerQueue *q)
 {
     q->current = 0;
-
     for (int i = 0; i < PLAYERS; i++)
     {
-        // for (int i = 0; i < PLAYERS; i++) {
-        //     for (int j = 0; j < PIECES; j++) {
-        //         players[i].pieces[j] = -1; // All pieces start in base
-        //     }
-        // }
-        q->players[i].pieces_in_home = 4;
-        q->players[i].consecutive_sixes = 0;
+        q->players[i].piecesInBase = 4;
+        q->players[i].piecesInHome = 0;
+        q->players[i].consecutiveSixes = 0;
+        q->players[i].color = get_color(i);
+        for (int j = 0; j < PIECES; j++)
+        {
+            q->players[i].pieces[j].status = BASE;
+            q->players[i].pieces[j].capturedPieces = 0;
+            q->players[i].pieces[j].toWin = 0;
+            q->players[i].pieces[j].approchCount = 0;
+            q->players[i].pieces[j].isBlocked = false;
+        }
+        
     }
-    q->players[0].color = YELLOW;
-    q->players[1].color = BLUE;
-    q->players[2].color = RED;
-    q->players[3].color = GREEN;
 }
 
 // IN GAME FUNCTIONS
@@ -189,7 +190,7 @@ void moveToX (PlayerQueue *q){
 
 int has_won(Player *player)
 {
-    return player->pieces_in_home == PIECES;
+    return player->piecesInHome == PIECES;
 }
 
 // void capture_piece(Player players[PLAYERS], int current_player, int position)
