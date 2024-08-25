@@ -23,13 +23,38 @@
 #define WINNING_POSITION 58
 
 // enums
-typedef enum { YELLOW, BLUE,RED, GREEN  } PlayerColor;
-typedef enum { BASIC, START,APPROCH, MYSTERY, BHAWANA, KOTUWA, PITA_KOTUWA } CellType;
-typedef enum { BASE, HOME, ONTRACK  } Status;
-typedef enum { SICK, POWERED } Aura;
+typedef enum
+{
+    YELLOW,
+    BLUE,
+    RED,
+    GREEN
+} PlayerColor;
+typedef enum
+{
+    BASIC,
+    START,
+    APPROCH,
+    MYSTERY,
+    BHAWANA,
+    KOTUWA,
+    PITA_KOTUWA
+} CellType;
+typedef enum
+{
+    BASE,
+    HOME,
+    ONTRACK
+} Status;
+typedef enum
+{
+    SICK,
+    POWERED
+} Aura;
 
 // structures
-typedef struct {
+typedef struct
+{
     Status status;
     int direction;
     int capturedPieces;
@@ -41,15 +66,17 @@ typedef struct {
     int auraDuration;
 } Piece;
 
-typedef struct {
+typedef struct
+{
     PlayerColor color;
     Piece pieces[PIECES];
-    int pieces_in_home;
-    int consecutive_sixes; // Counter for consecutive sixes
-    int passed_approach[PIECES]; // Track how many times each piece has passed the Approach cell
+    int piecesInHome;
+    int piecesInBase;
+    int consecutiveSixes;
 } Player;
 
-typedef struct {
+typedef struct
+{
     Player players[PLAYERS];
     int current;
 } PlayerQueue;
@@ -58,20 +85,20 @@ typedef struct
 {
     CellType type;
     int noOfPiece;
-    PlayerColor relatedColor; 
+    PlayerColor relatedColor;
 } Cell;
 
-
+// functions
 void pre_message();
 void initialize_players(PlayerQueue *q);
 void initialize_board();
 void initializeQueue(PlayerQueue *q);
 
 int roll_dice();
-void move_piece(Player* player, int piece_index, int roll, Player players[PLAYERS], int current_player);
-int can_move_from_base(Player* player, int roll);
+void move_piece(Player *player, int piece_index, int roll, Player players[PLAYERS], int current_player);
+int can_move_from_base(Player *player, int roll);
 void print_board(Player players[PLAYERS]);
-int has_won(Player* player);
+int has_won(Player *player);
 void capture_piece(Player players[PLAYERS], int current_player, int position);
 
 #endif
