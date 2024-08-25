@@ -1,6 +1,14 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+// data types
+#define true 1
+#define false 0
+
+#define antiClock 1
+#define clock 0
+
+// constants
 #define DICE_SIDES 6
 
 #define PLAYERS 4
@@ -8,13 +16,34 @@
 
 #define STANDARD_CELLS 52
 #define HOME_STRAIGHT_CELLS 5
+#define BHAWANA_I 9
+#define KOTUWA_I 27
+#define PITA_KOTUWA_I 46
 
 #define WINNING_POSITION 58
 
+// enums
 typedef enum { YELLOW, BLUE,RED, GREEN  } PlayerColor;
+typedef enum { BASIC, START,APPROCH, MYSTERY, BHAWANA, KOTUWA, PITA_KOTUWA } CellType;
+typedef enum { BASE, HOME, ONTRACK  } Status;
+typedef enum { SICK, POWERED } Aura;
+
+// structures
+typedef struct {
+    Status status;
+    int direction;
+    int capturedPieces;
+    int homeCount;
+    int approchCount;
+    int isBlocked;
+    int blockDirection;
+    Aura auraType;
+    int auraDuration;
+} Piece;
+
 typedef struct {
     PlayerColor color;
-    int pieces[PIECES];
+    Piece pieces[PIECES];
     int pieces_in_home;
     int consecutive_sixes; // Counter for consecutive sixes
     int passed_approach[PIECES]; // Track how many times each piece has passed the Approach cell
@@ -25,8 +54,17 @@ typedef struct {
     int current;
 } PlayerQueue;
 
+typedef struct
+{
+    CellType type;
+    int noOfPiece;
+    PlayerColor relatedColor; 
+} Cell;
+
+
 void pre_message();
-void initialize_game(PlayerQueue *q);
+void initialize_players(PlayerQueue *q);
+void initialize_board();
 void initializeQueue(PlayerQueue *q);
 
 int roll_dice();

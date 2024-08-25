@@ -11,7 +11,29 @@ const char *colorNames[] = {
     "YELLOW",
     "BLUE",
     "RED",
-    "GREEN"};
+    "GREEN"
+    };
+
+PlayerColor getColor(int num){
+    if (num == 0) return YELLOW;
+    else if (num == 1) return BLUE;
+    else if (num == 1) return BLUE;
+    else return GREEN;
+}
+
+int roll_dice()
+{
+    return (rand() % 6) + 1;
+}
+
+int coin_toss()
+{
+    return (rand() % 2) + 1;
+}
+
+Cell standardCells[STANDARD_CELLS];
+
+// PRE GAME FUNCTIONS
 
 void pre_message()
 {
@@ -22,7 +44,7 @@ void pre_message()
     }
 }
 
-void initialize_game(PlayerQueue *queue)
+void initialize_players(PlayerQueue *queue)
 {
     int maxValue = 0;
     int maxIndex = 0;
@@ -46,49 +68,64 @@ void initialize_game(PlayerQueue *queue)
     printf("The order of a single round is %s, %s, %s, and %s.\n", colorNames[maxIndex], colorNames[(maxIndex + 1) % 4], colorNames[(maxIndex + 2) % 4], colorNames[(maxIndex + 3) % 4]);
 }
 
-void print_board(Player players[PLAYERS])
+void initialize_board()
 {
     for (int i = 0; i < PLAYERS; i++)
     {
-        printf("Player %d pieces: ", i + 1);
-        for (int j = 0; j < PIECES; j++)
-        {
-            if (players[i].pieces[j] == -1)
-            {
-                printf("Base ");
-            }
-            else if (players[i].pieces[j] == WINNING_POSITION)
-            {
-                printf("Home ");
-            }
-            else
-            {
-                printf("%d ", players[i].pieces[j]);
-            }
-        }
-        printf("\n");
+        standardCells[START_POINTS[i]].type = START;
+        standardCells[START_POINTS[i]].relatedColor = getColor(i);
+        standardCells[APPROACH_POSITIONS[i]].type = APPROCH;
+        standardCells[APPROACH_POSITIONS[i]].relatedColor = getColor(i);
+        standardCells[HOME_ENTRIES[i]].type = APPROCH;
+        standardCells[HOME_ENTRIES[i]].relatedColor = getColor(i);
     }
+
+    standardCells[BHAWANA_I].type = BHAWANA;
+    standardCells[KOTUWA_I].type = KOTUWA;
+    standardCells[PITA_KOTUWA_I].type = PITA_KOTUWA;
+    
 }
 
-int roll_dice()
+void initializeQueue(PlayerQueue *q)
 {
-    return (rand() % 6) + 1;
-}
+    q->current = 0;
 
-int can_move_from_base(Player *player, int roll)
-{
-    if (roll == 6)
+    for (int i = 0; i < PLAYERS; i++)
     {
-        for (int i = 0; i < PIECES; i++)
-        {
-            if (player->pieces[i] == -1)
-            {
-                return 1; // Can move a piece out of base
-            }
-        }
+        // for (int i = 0; i < PLAYERS; i++) {
+        //     for (int j = 0; j < PIECES; j++) {
+        //         players[i].pieces[j] = -1; // All pieces start in base
+        //     }
+        // }
+        q->players[i].pieces_in_home = 4;
+        q->players[i].consecutive_sixes = 0;
     }
-    return 0;
+    q->players[0].color = YELLOW;
+    q->players[1].color = BLUE;
+    q->players[2].color = RED;
+    q->players[3].color = GREEN;
 }
+
+// IN GAME FUNCTIONS
+
+void moveToX (PlayerQueue *q){
+    q->players[q->current].pieces[0].status = ONTRACK;
+}
+
+// int can_move_from_base(Player *player, int roll)
+// {
+//     if (roll == 6)
+//     {
+//         for (int i = 0; i < PIECES; i++)
+//         {
+//             if (player->pieces[i] == -1)
+//             {
+//                 return 1; // Can move a piece out of base
+//             }
+//         }
+//     }
+//     return 0;
+// }
 
 // void move_piece(Player* player, int piece_index, int roll, Player players[PLAYERS], int current_player) {
 //     if (player->pieces[piece_index] == -1) {
@@ -155,42 +192,20 @@ int has_won(Player *player)
     return player->pieces_in_home == PIECES;
 }
 
-void capture_piece(Player players[PLAYERS], int current_player, int position)
-{
-    for (int i = 0; i < PLAYERS; i++)
-    {
-        if (i != current_player)
-        { // Check only opponent players
-            for (int j = 0; j < PIECES; j++)
-            {
-                if (players[i].pieces[j] == position)
-                { // Opponent's piece is at the same position
-                    printf("Player %d's piece %d captured by Player %d!\n", i + 1, j + 1, current_player + 1);
-                    players[i].pieces[j] = -1; // Send opponent's piece back to base
-                }
-            }
-        }
-    }
-}
-
-// players data structure
-
-void initializeQueue(PlayerQueue *q)
-{
-    q->current = 0;
-
-    for (int i = 0; i < PLAYERS; i++)
-    {
-        // for (int i = 0; i < PLAYERS; i++) {
-        //     for (int j = 0; j < PIECES; j++) {
-        //         players[i].pieces[j] = -1; // All pieces start in base
-        //     }
-        // }
-        q->players[i].pieces_in_home = 4;
-        q->players[i].consecutive_sixes = 0;
-    }
-    q->players[0].color = YELLOW;
-    q->players[1].color = BLUE;
-    q->players[2].color = RED;
-    q->players[3].color = GREEN;
-}
+// void capture_piece(Player players[PLAYERS], int current_player, int position)
+// {
+//     for (int i = 0; i < PLAYERS; i++)
+//     {
+//         if (i != current_player)
+//         { // Check only opponent players
+//             for (int j = 0; j < PIECES; j++)
+//             {
+//                 if (players[i].pieces[j] == position)
+//                 { // Opponent's piece is at the same position
+//                     printf("Player %d's piece %d captured by Player %d!\n", i + 1, j + 1, current_player + 1);
+//                     players[i].pieces[j] = -1; // Send opponent's piece back to base
+//                 }
+//             }
+//         }
+//     }
+// }

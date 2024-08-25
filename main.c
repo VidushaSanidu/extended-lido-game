@@ -6,12 +6,16 @@
 int main()
 {
     PlayerQueue playerQueue;
+
     srand(time(NULL));
 
     // before game begins
     pre_message();
 
-    initialize_game(&playerQueue);
+    initialize_players(&playerQueue);
+    initialize_board();
+
+    // in game operations
 
     // while (winner == -1)
     // {
