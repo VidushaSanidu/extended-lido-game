@@ -58,6 +58,7 @@ typedef struct
     Status status;
     int direction;
     int capturedPieces;
+    int straightCount;
     int toWin;
     int approchCount;
     int isBlocked;
@@ -77,12 +78,6 @@ typedef struct
 
 typedef struct
 {
-    Player players[PLAYERS];
-    int current;
-} PlayerQueue;
-
-typedef struct
-{
     CellType type;
     int noOfPiece;
     PlayerColor currentColor;
@@ -90,9 +85,9 @@ typedef struct
 
 // functions
 void pre_message();
-void initialize_players(PlayerQueue *q);
+void initialize_players(Player *q[]);
 void initialize_board();
-void initializeQueue(PlayerQueue *q);
+void initializeQueue(Player *q[]);
 
 int roll_dice();
 void move_piece(Player *player, int piece_index, int roll, Player players[PLAYERS], int current_player);
@@ -100,5 +95,8 @@ int can_move_from_base(Player *player, int roll);
 void print_board(Player players[PLAYERS]);
 int has_won(Player *player);
 void capture_piece(Player players[PLAYERS], int current_player, int position);
+
+void move_to_x (Player player);
+
 
 #endif
