@@ -109,8 +109,19 @@ void initializeQueue(PlayerQueue *q)
 
 // IN GAME FUNCTIONS
 
-void moveToX (PlayerQueue *q){
-    q->players[q->current].pieces[0].status = ONTRACK;
+void moveToX (Player player){
+    if (player.piecesInBase > 0){
+        int index = 4 - player.piecesInBase;
+        int direction = coin_toss();
+
+        player.pieces[index].position = 0;
+        player.pieces[index].status = ONTRACK;
+        player.pieces[index].direction = direction;
+        player.piecesInBase --;
+
+        printf("\n%s player moves piece %s%d to the starting point. \n",colorNames[player.color],colorNames[player.color][0],index+1);
+        printf("%s player now has %d/4 on pieces on the board and %d/4 pieces on the base.\n",colorNames[player.color],index+1,player.piecesInBase);
+    }
 }
 
 // int can_move_from_base(Player *player, int roll)

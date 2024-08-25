@@ -55,6 +55,7 @@ typedef enum
 // structures
 typedef struct
 {
+    int position;
     Status status;
     int direction;
     int capturedPieces;
