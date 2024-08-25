@@ -14,6 +14,10 @@ const char *colorNames[] = {
     "GREEN"
     };
 
+const char *direction[] = {
+    "Clockwise", "Anti-Clockwise"
+    };
+
 PlayerColor get_color(int num){
     if (num == 0) return YELLOW;
     else if (num == 1) return BLUE;
@@ -73,6 +77,13 @@ void initialize_board()
     standardCells[BHAWANA_I].type = BHAWANA;
     standardCells[KOTUWA_I].type = KOTUWA;
     standardCells[PITA_KOTUWA_I].type = PITA_KOTUWA;
+    for (int i = 0; i < STANDARD_CELLS; i++){
+        standardCells[i].currentColor = DEFAULT;
+    }
+    {
+        /* code */
+    }
+    
     
 }
 
@@ -117,18 +128,21 @@ void move_to_x (Player player){
     }
 }
 
-void standard_move(Piece piece, int value){
+void standard_move(Piece piece, int value, int pieceNo){
     PlayerColor color = standardCells[piece.position].currentColor;
+    int oldPostion = piece.position;
     int newPosition;
     if (piece.direction == clock)
-        newPosition = piece.position + value;
+        newPosition = oldPostion + value;
     else
-        newPosition = piece.position - value;
+        newPosition = oldPostion - value;
 
-    standardCells[piece.position].noOfPiece --;
-    standardCells[piece.position].currentColor = DEFAULT;
+    standardCells[oldPostion].noOfPiece --;
+    standardCells[oldPostion].currentColor = DEFAULT;
     piece.position = newPosition;
     standardCells[piece.position].currentColor = color;
+    
+    printf("\n%s moves piece %d from location %d to %d by %d units in %s direction.\n",colorNames[color],pieceNo,oldPostion,newPosition,direction[piece.direction]);
 }
 
 
