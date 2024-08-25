@@ -48,8 +48,14 @@ typedef enum
 typedef enum
 {
     SICK,
-    POWERED
+    POWERED,
+    DEFAULT
 } Aura;
+
+typedef struct {
+    int hunt;
+    int pieceIndex;
+} HuntResult;
 
 // structures
 typedef struct
@@ -97,6 +103,7 @@ int has_won(Player *player);
 void capture_piece(Player players[PLAYERS], int current_player, int position);
 
 void move_to_x (Player player);
+HuntResult nearest_hunt(Player player, int max);
 
 
 #endif

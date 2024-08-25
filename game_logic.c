@@ -96,6 +96,7 @@ void initialize_queue(Player players[])
         players[i].color = get_color(i);
         for (int j = 0; j < PIECES; j++)
         {
+            players[i].pieces[j].position = -1;
             players[i].pieces[j].status = BASE;
             players[i].pieces[j].capturedPieces = 0;
             players[i].pieces[j].toWin = 52;
@@ -108,9 +109,10 @@ void initialize_queue(Player players[])
 
 // IN GAME FUNCTIONS
 
-int get_nearest_hunt_for_single(Player player, int max)
+HuntResult get_nearest_hunt_for_single(Player player, int max)
 {
-    int hunt = -1;
+    HuntResult result;
+    result.hunt = -1;
     int gap = 60;
     for (int i = 0; i < PIECES; i++)
     {
@@ -123,7 +125,8 @@ int get_nearest_hunt_for_single(Player player, int max)
                     if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color) break;
                     if (standardCells[j].noOfPiece == 1 && standardCells[j].currentColor != player.color && gap > player.pieces[i].toWin)
                     {
-                        hunt = j;
+                        result.hunt = j;
+                        result.pieceIndex = i;
                     }
                 }
             }else{
@@ -132,17 +135,21 @@ int get_nearest_hunt_for_single(Player player, int max)
                     if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color) break;
                     if (standardCells[j].noOfPiece == 1 && standardCells[j].currentColor != player.color && gap > player.pieces[i].toWin)
                     {
-                        hunt = j;
+                        result.hunt = j;
+                        result.pieceIndex = i;
+                        
                     }
                 }
             }
         }
     }
+    return result;
 }
 
-int get_nearest_hunt_for_block(Player player, int max)
+HuntResult get_nearest_hunt_for_block(Player player, int max)
 {
-    int hunt = -1;
+    HuntResult result;
+    result.hunt = -1;
     int gap = 60;
     for (int i = 0; i < PIECES; i++)
     {
@@ -155,7 +162,9 @@ int get_nearest_hunt_for_block(Player player, int max)
                     if (standardCells[j].noOfPiece > standardCells[i].noOfPiece && standardCells[j].currentColor != player.color) break;
                     if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color && gap > player.pieces[i].toWin)
                     {
-                        hunt = j;
+                        result.hunt = j;
+                        result.pieceIndex = i;
+                        
                     }
                 }
             }else{
@@ -164,21 +173,27 @@ int get_nearest_hunt_for_block(Player player, int max)
                     if (standardCells[j].noOfPiece > standardCells[i].noOfPiece && standardCells[j].currentColor != player.color) break;
                     if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color && gap > player.pieces[i].toWin)
                     {
-                        hunt = j;
+                        result.hunt = j;
+                        result.pieceIndex = i;
                     }
                 }
             }
         }
     }
+    return result;
 }
 
-int nearest_hunt(Player player, int max){
-    int single = get_nearest_hunt_for_single(player,max);
-    int block = get_nearest_hunt_for_block(player,max);
+HuntResult nearest_hunt(Player player, int max){
+    HuntResult single = get_nearest_hunt_for_single(player,max);
+    HuntResult block = get_nearest_hunt_for_block(player,max/2);
 
-    int hunt;
-    
-
+    HuntResult final;
+    if (player.pieces[single.pieceIndex].toWin > player.pieces[block.pieceIndex].toWin){
+        final = block;
+    }else {
+        final = single;
+    }
+    return final;
 }
 
 void move_to_x(Player player)
@@ -219,6 +234,44 @@ void standard_move(Piece piece, int value, int pieceNo)
 
     printf("\n%s moves piece %d from location %d to %d by %d units in %s direction.\n", colorNames[color], pieceNo, oldPostion, newPosition, direction[piece.direction]);
 }
+
+void capturing_move(Player players[],int cUser, HuntResult hunt){
+    Player target = players[standardCells[hunt.hunt].currentColor];
+
+    for (int i = 0; i < PIECES; i++)
+    {
+        if(target.pieces[i].position == hunt.hunt){
+            reset_piece(target.pieces[i]);
+        }
+    }
+    int oldPos = players[cUser].pieces[hunt.pieceIndex].position;
+    for (int i = 0; i < PIECES; i++)
+    {
+        if(players[cUser].pieces[i].position == oldPos){
+            players[cUser].pieces[i].position = hunt.hunt;
+            players[cUser].pieces[i].capturedPieces ++;
+            players[cUser].pieces[i].toWin -= abs(hunt.hunt - oldPos);
+        }
+    }
+    standardCells[hunt.hunt].currentColor = standardCells[oldPos].currentColor;
+    standardCells[hunt.hunt].noOfPiece = standardCells[oldPos].noOfPiece;
+    standardCells[oldPos].currentColor = DEFAULT;
+    standardCells[oldPos].noOfPiece = 0;
+
+}
+
+void reset_piece(Piece piece){
+    piece.position = -1;
+    piece.approchCount = 0;
+    piece.auraDuration = 0;
+    piece.auraType = DEFAULT;
+    piece.blockDirection = 0;
+    piece.capturedPieces = 0;
+    piece.isBlocked = false;
+    piece.status = BASE;
+    piece.toWin = 52;    
+}
+
 
 void blocking_move(Piece piece, int value, int pieceNo)
 {

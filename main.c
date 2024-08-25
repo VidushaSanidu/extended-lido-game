@@ -21,15 +21,15 @@ int main()
     // while (true){
         
         int dice = roll_dice();
-        int hunt = nearest_hunt(players[currentUser],dice);
+        HuntResult hunt = nearest_hunt(players[currentUser],dice);
 
         if (players[currentUser].color == RED){
             printf("RED player rolled %d",dice);
             if (dice == 6){
                 if (players[2].piecesInBase == 4){
                     move_to_x(players[2]);
-                }else if (hunt != -1){
-                    
+                }else if (hunt.hunt != -1){
+                    capturing_move(players,currentUser,hunt);
                 }
             }
         }
