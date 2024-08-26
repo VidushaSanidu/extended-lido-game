@@ -99,6 +99,16 @@ typedef struct {
     int prevIndex;
 } BlockedResult;
 
+typedef struct {
+    int pieceNo;
+    int blockIndex;
+} FindBlockResult;
+
+typedef struct {
+    int pieceNo;
+    int boxIndex;
+} BoxResult;
+
 // functions
 void pre_message();
 void initialize_players(int *current);

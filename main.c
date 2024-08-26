@@ -28,6 +28,7 @@ int main()
         BlockedResult singleBlock = find_non_blockable_single(players[currentUser],dice);
         BlockedResult blockBlock = find_non_blockable_block(players[currentUser],dice);
 
+
         if (players[currentUser].color == RED){
             printf("RED player rolled %d",dice);
             if (dice == 6){

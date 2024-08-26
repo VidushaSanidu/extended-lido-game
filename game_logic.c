@@ -366,33 +366,36 @@ HuntResult get_nearest_hunt_for_single(Player player, int max)
     {
         if (player.pieces[i].status == ONTRACK)
         {
+            int isBlocked = false;
+            int target;
             if (player.pieces[i].direction == clock)
             {
+                target = player.pieces[i].position + max;
                 for (int j = player.pieces[i].position + 1; j <= max; j++)
                 {
-                    if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color)
+                    if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color){
+                        isBlocked = true;
                         break;
-                    if (standardCells[j].noOfPiece == 1 && standardCells[j].currentColor != player.color && gap > find_gap(player.pieces[i]))
-                    {
-                        gap = find_gap(player.pieces[i]);
-                        result.huntIndex = j;
-                        result.pieceNo = i;
                     }
-                }
+                } 
             }
             else
             {
+                target = player.pieces[i].position - max;
                 for (int j = player.pieces[i].position - 1; j >= max; j--)
                 {
-                    if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color)
+                    if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color){
+                        isBlocked = true;
                         break;
-                    if (standardCells[j].noOfPiece == 1 && standardCells[j].currentColor != player.color && gap > find_gap(player.pieces[i]))
-                    {
-                        gap = find_gap(player.pieces[i]);
-                        result.huntIndex = j;
-                        result.pieceNo = i;
                     }
-                }
+                } 
+                
+            }
+            if (isBlocked == false && standardCells[target].noOfPiece == 1 && standardCells[target].currentColor != player.color && gap > find_gap(player.pieces[i]))
+            {
+                gap = find_gap(player.pieces[i]);
+                result.huntIndex = target;
+                result.pieceNo = i;
             }
         }
     }
@@ -408,40 +411,43 @@ HuntResult get_nearest_hunt_for_block(Player player, int max)
 
     for (int i = 0; i < PIECES; i++)
     {
-        if (player.pieces[i].status == ONTRACK)
+        if (player.pieces[i].status != ONTRACK)
             continue;
 
         int noOfPeices = standardCells[player.pieces[i].position].noOfPiece;
         max = max / noOfPeices;
         if (noOfPeices > 1)
         {
+            int isBlocked = false;
+            int target;
             if (player.pieces[i].blockDirection == clock)
             {
-                for (int j = player.pieces[i].position + 1; j < max; j++)
+                target = player.pieces[i].position + max;
+                for (int j = player.pieces[i].position + 1; j <= max; j++)
                 {
-                    if (standardCells[j].noOfPiece > noOfPeices && standardCells[j].currentColor != player.color)
+                    if (standardCells[j].noOfPiece > noOfPeices && standardCells[j].currentColor != player.color){
+                        isBlocked = true;
                         break;
-                    if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color && gap > find_gap(player.pieces[i]))
-                    {
-                        gap = find_gap(player.pieces[i]);
-                        result.huntIndex = j;
-                        result.pieceNo = i;
                     }
-                }
+                } 
             }
             else
             {
+                target = player.pieces[i].position - max;
                 for (int j = player.pieces[i].position - 1; j >= max; j--)
                 {
-                    if (standardCells[j].noOfPiece > noOfPeices && standardCells[j].currentColor != player.color)
+                    if (standardCells[j].noOfPiece > noOfPeices && standardCells[j].currentColor != player.color){
+                        isBlocked = true;
                         break;
-                    if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color && gap > find_gap(player.pieces[i]))
-                    {
-                        gap = find_gap(player.pieces[i]);
-                        result.huntIndex = j;
-                        result.pieceNo = i;
                     }
-                }
+                } 
+                
+            }
+            if (isBlocked == false && standardCells[target].noOfPiece <= noOfPeices && standardCells[target].currentColor != player.color && gap > find_gap(player.pieces[i]))
+            {
+                gap = find_gap(player.pieces[i]);
+                result.huntIndex = target;
+                result.pieceNo = i;
             }
         }
     }
@@ -530,13 +536,16 @@ BlockedResult find_non_blockable_block(Player player, int max)
     for (int i = 0; i < PIECES; i++)
     {
         Piece piece = player.pieces[i];
+        if (piece.status != ONTRACK)
+            continue;
+
         int count = standardCells[piece.position].noOfPiece; 
-        if (piece.status == ONTRACK && count > 1)
+        if ( count > 1)
         {
             int isBlocked = false;
-            if (player.pieces[i].blockDirection == clock)
+            if (piece.blockDirection == clock)
             {
-                for (int j = player.pieces[i].position + 1; j <= max/count; j++)
+                for (int j = piece.position + 1; j <= max/count; j++)
                 {
                     if (standardCells[j].noOfPiece > count && standardCells[j].currentColor != player.color)
                     {
@@ -548,7 +557,7 @@ BlockedResult find_non_blockable_block(Player player, int max)
             }
             else
             {
-                for (int j = player.pieces[i].position - 1; j >= max/count; j--)
+                for (int j = piece.position - 1; j >= max/count; j--)
                 {
                     if (standardCells[j].noOfPiece > count && standardCells[j].currentColor != player.color)
                     {
@@ -558,13 +567,13 @@ BlockedResult find_non_blockable_block(Player player, int max)
                     }
                 }
             }
-            int newGap = find_gap(player.pieces[i]);
+            int newGap = find_gap(piece);
             if (newGap < gap && isBlocked == false)
             {
                 gap = newGap;
                 data.pieceNo = i;
             }
-            else if (newGap < gap && isBlocked == true && prev != player.pieces[i].position )
+            else if (newGap < gap && isBlocked == true && prev != piece.position )
             {
                 gap = newGap;
                 data.pieceNo = i;
@@ -574,6 +583,101 @@ BlockedResult find_non_blockable_block(Player player, int max)
     }
     return data;
 }
+
+FindBlockResult find_blocks(Player player, int max)
+{
+    FindBlockResult data;
+    data.pieceNo = -1;
+    data.blockIndex = -1;
+
+    for (int i = 0; i < PIECES; i++)
+    {
+        Piece piece = player.pieces[i];
+        if (piece.status == ONTRACK)
+        {
+            int isBlocked = false;
+            int target;
+            if (player.pieces[i].direction == clock)
+            {
+                target = player.pieces[i].position + max;
+                for (int j = player.pieces[i].position + 1; j <= max; j++)
+                {
+                    if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color){
+                        isBlocked = true;
+                        break;
+                    }
+                } 
+            }
+            else
+            {
+                target = player.pieces[i].position - max;
+                for (int j = player.pieces[i].position - 1; j >= max; j--)
+                {
+                    if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color){
+                        isBlocked = true;
+                        break;
+                    }
+                } 
+                
+            }
+            if (isBlocked == false && standardCells[target].noOfPiece >= 1 && standardCells[target].currentColor == player.color)
+            {
+                data.blockIndex = target;
+                data.pieceNo = i;
+                return data;
+            }
+        }
+    }
+    return data;
+}
+
+BoxResult find_mystory_box(Player player, int max)
+{
+    BoxResult data;
+    data.pieceNo = -1;
+    data.boxIndex = -1;
+
+    for (int i = 0; i < PIECES; i++)
+    {
+        Piece piece = player.pieces[i];
+        if (piece.status == ONTRACK)
+        {
+            int isBlocked = false;
+            int target;
+            if (player.pieces[i].direction == clock)
+            {
+                target = player.pieces[i].position + max;
+                for (int j = player.pieces[i].position + 1; j <= max; j++)
+                {
+                    if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color){
+                        isBlocked = true;
+                        break;
+                    }
+                } 
+            }
+            else
+            {
+                target = player.pieces[i].position - max;
+                for (int j = player.pieces[i].position - 1; j >= max; j--)
+                {
+                    if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color){
+                        isBlocked = true;
+                        break;
+                    }
+                } 
+                
+            }
+            if (isBlocked == false && standardCells[target].noOfPiece == 0 && standardCells[target].type == MYSTERY)
+            {
+                data.boxIndex = target;
+                data.pieceNo = i;
+                return data;
+            }
+        }
+    }
+    return data;
+}
+
 
 void standard_move(Player player, int value, int pieceNo)
 {
