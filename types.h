@@ -8,9 +8,6 @@
 #define antiClock 1
 #define clock 0
 
-// global variables
-extern Player players[4];
-
 // constants
 #define DICE_SIDES 6
 
@@ -109,6 +106,9 @@ typedef struct {
     int boxIndex;
 } BoxResult;
 
+// global variables
+extern Player players[4];
+
 // functions
 void pre_message();
 void initialize_players(int *current);
@@ -123,16 +123,17 @@ int get_board_count(Player player);
 
 void single_move(PlayerColor index, int pieceIndex, int roll);
 void block_move(PlayerColor index, int pieceIndex, int roll);
-void move_to_x(Player player);
 void handle_mystery(PlayerColor index, int pieceIndex, int option);
 
 HuntResult get_nearest_hunt_for_single(Player player, int max);
 HuntResult get_nearest_hunt_for_block(Player player, int max);
 BlockedResult find_non_blockable_single(Player player, int max);
 BlockedResult find_non_blockable_block(Player player, int max);
+BoxResult find_mystory_box(Player player, int max);
+FindBlockResult find_blocks(Player player, int max);
 
+void move_to_x(Player player);
 void single_capturing_move(int cUser, HuntResult hunt,int roll);
-
 void capturing_move(Player players[], int cUser, HuntResult hunt,int roll);
 
 

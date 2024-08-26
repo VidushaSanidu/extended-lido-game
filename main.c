@@ -35,7 +35,7 @@ int main()
                 if (singleHunt.huntIndex != -1){
                     single_capturing_move(currentUser,singleHunt, 6);
                 } else if (blockHunt.huntIndex != -1){
-                    block_capturing_move(currentUser,singleHunt, 6);
+                    // block_capturing_move(currentUser,singleHunt, 6);
                 } else if (players[currentUser].piecesInBase != 0){
                     move_to_x(players[currentUser]);
                 }else {
