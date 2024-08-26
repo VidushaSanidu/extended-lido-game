@@ -25,21 +25,27 @@ int main()
         HuntResult singleHunt = get_nearest_hunt_for_single(players[currentUser],dice);
         HuntResult blockHunt = get_nearest_hunt_for_block(players[currentUser],dice);
 
-        BlockedResult singleBlock = find_non_blockable_single(players[currentUser],dice);
-        BlockedResult blockBlock = find_non_blockable_block(players[currentUser],dice);
+        BlockedResult singleNoBlock = find_non_blockable_single(players[currentUser],dice);
+        BlockedResult blockNoBlock = find_non_blockable_block(players[currentUser],dice);
+
+
 
 
         if (players[currentUser].color == RED){
             printf("RED player rolled %d",dice);
             if (dice == 6){
                 if (singleHunt.huntIndex != -1){
-                    single_capturing_move(currentUser,singleHunt, 6);
+                    single_capturing_move(currentUser,singleHunt, dice);
                 } else if (blockHunt.huntIndex != -1){
-                    block_capturing_move(currentUser,singleHunt, 6);
+                    block_capturing_move(currentUser,singleHunt, dice);
                 } else if (players[currentUser].piecesInBase != 0){
                     move_to_x(players[currentUser]);
                 }else {
+                    if (singleNoBlock.pieceNo != -1){
+                        standard_single_move(currentUser,singleNoBlock.pieceNo,dice);
+                    } else if (blockNoBlock.pieceNo != -1){
 
+                    }
                 }
             }
         }

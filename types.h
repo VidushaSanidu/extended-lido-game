@@ -135,7 +135,7 @@ FindBlockResult find_blocks(Player player, int max);
 void move_to_x(Player player);
 void single_capturing_move(int cUser, HuntResult hunt,int roll);
 void block_capturing_move(int cUser, HuntResult hunt,int roll);
-void capturing_move(Player players[], int cUser, HuntResult hunt,int roll);
+void standard_single_move(int cUser,int pieceNo, int roll);
 
 
 #endif

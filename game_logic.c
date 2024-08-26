@@ -682,23 +682,22 @@ void move_to_x(Player player)
     printf("%s player now has %d/4 on pieces on the board and %d/4 pieces on the base.\n", colorNames[player.color], index + 1, player.piecesInBase);
 }
 
-void standard_move(Player player, int value, int pieceNo)
+void standard_single_move(int cUser,int pieceNo, int roll)
 {
-    Piece piece;
-    PlayerColor color = player.color;
-    int oldPostion = piece.position;
-    int newPosition;
-    if (piece.direction == clock)
-        newPosition = oldPostion + value;
-    else
-        newPosition = oldPostion - value;
+    int oldPostion = players[cUser].pieces[pieceNo].position;
+    single_move(cUser,pieceNo,roll);
+    int newPosition = players[cUser].pieces[pieceNo].position;
 
-    standardCells[oldPostion].noOfPiece--;
-    standardCells[oldPostion].currentColor = DEFAULT;
-    piece.position = newPosition;
-    standardCells[piece.position].currentColor = color;
+    printf("\n%s moves piece %d from location %d to %d by %d units in %s direction.\n", colorNames[cUser], pieceNo, oldPostion, newPosition, roll, direction[players[cUser].pieces[pieceNo].direction]);
+}
 
-    printf("\n%s moves piece %d from location %d to %d by %d units in %s direction.\n", colorNames[color], pieceNo, oldPostion, newPosition, value, direction[piece.direction]);
+void standard_block_move(int cUser,int pieceNo, int roll)
+{
+    int oldPostion = players[cUser].pieces[pieceNo].position;
+    block_move(cUser,pieceNo,roll);
+    int newPosition = players[cUser].pieces[pieceNo].position;
+
+    printf("\n%s moves pieces from location %d to %d by %d units in %s direction.\n", colorNames[cUser], oldPostion, newPosition, roll, direction[players[cUser].pieces[pieceNo].blockDirection]);
 }
 
 void single_capturing_move(int cUser, HuntResult hunt, int roll)
