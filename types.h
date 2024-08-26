@@ -22,6 +22,10 @@
 
 #define WINNING_POSITION 58
 
+#define START_POINTS_V {50, 11, 24, 37}
+#define APPROACH_POSITIONS_V {50, 11, 24, 37}
+#define HOME_ENTRIES_V {50, 11, 24, 37}
+
 // enums
 typedef enum
 {
@@ -49,7 +53,7 @@ typedef enum
 {
     SICK,
     POWERED,
-    DEFAULT
+    NORMAL
 } Aura;
 
 // structures
@@ -97,16 +101,17 @@ typedef struct {
 
 // functions
 void pre_message();
-void initialize_players(Player *q[]);
+void initialize_players(Player players[], int *current);
 void initialize_board();
-void initializeQueue(Player *q[]);
+void initialize_queue(Player q[]);
 
 int roll_dice();
+int coin_toss();
 void move_piece(Player *player, int piece_index, int roll, Player players[PLAYERS], int current_player);
 void capture_piece(Player players[PLAYERS], int current_player, int position);
 
 void move_to_x (Player player);
 HuntResult nearest_hunt(Player player, int max);
-
+int get_board_count(Player player);
 
 #endif

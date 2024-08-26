@@ -3,10 +3,10 @@
 #include <time.h>
 #include "types.h"
 
-// constant data
-const int START_POINTS[PLAYERS] = {50, 11, 24, 37};      // Starting positions for Y, B, R, G
-const int APPROACH_POSITIONS[PLAYERS] = {0, 13, 26, 39}; // Last cell before home straight for Y, B, R, G
-const int HOME_ENTRIES[PLAYERS] = {51, 12, 25, 38};      // First position in the home straight for Y, B, R, G
+// constant array data
+const int START_POINTS[PLAYERS] = START_POINTS_V;      // Starting positions for Y, B, R, G
+const int APPROACH_POSITIONS[PLAYERS] = APPROACH_POSITIONS_V; // Last cell before home straight for Y, B, R, G
+const int HOME_ENTRIES[PLAYERS] = HOME_ENTRIES_V;      // First position in the home straight for Y, B, R, G
 
 const char *colorNames[] = {
     "YELLOW",
@@ -39,10 +39,13 @@ int coin_toss()
     return (rand() % 2) + 1;
 }
 
+// Standard path array
+
 Cell standardCells[STANDARD_CELLS];
 
-// PRE GAME FUNCTIONS
+// PRE GAME FUNCTIONS //
 
+// render welcome and player choose
 void pre_message()
 {
     printf("\n-------Welcome to Ludo CS-------\n\n");
@@ -52,7 +55,8 @@ void pre_message()
     }
 }
 
-void initialize_players(Player *players[], int current)
+// initializing players data
+void initialize_players(Player players[], int *current)
 {
     int maxValue = 0;
     int maxIndex = 0;
@@ -71,20 +75,9 @@ void initialize_players(Player *players[], int current)
     printf("\n%s player has the highest roll and will begin the game.\n", colorNames[maxIndex]);
 
     initialize_queue(players);
-    current = maxIndex;
+    *current = maxIndex;
 
     printf("The order of a single round is %s, %s, %s, and %s.\n", colorNames[maxIndex], colorNames[(maxIndex + 1) % 4], colorNames[(maxIndex + 2) % 4], colorNames[(maxIndex + 3) % 4]);
-}
-
-void initialize_board()
-{
-    standardCells[BHAWANA_I].type = BHAWANA;
-    standardCells[KOTUWA_I].type = KOTUWA;
-    standardCells[PITA_KOTUWA_I].type = PITA_KOTUWA;
-    for (int i = 0; i < STANDARD_CELLS; i++)
-    {
-        standardCells[i].currentColor = DEFAULT;
-    }
 }
 
 void initialize_queue(Player players[])
@@ -99,6 +92,7 @@ void initialize_queue(Player players[])
         {
             players[i].pieces[j].position = -1;
             players[i].pieces[j].status = BASE;
+            players[i].pieces[j].auraType = NORMAL;
             players[i].pieces[j].capturedPieces = 0;
             players[i].pieces[j].toWin = 52;
             players[i].pieces[j].straightCount = 0;
@@ -108,7 +102,19 @@ void initialize_queue(Player players[])
     }
 }
 
-// IN GAME FUNCTIONS
+// initialize board data
+void initialize_board()
+{
+    standardCells[BHAWANA_I].type = BHAWANA;
+    standardCells[KOTUWA_I].type = KOTUWA;
+    standardCells[PITA_KOTUWA_I].type = PITA_KOTUWA;
+    for (int i = 0; i < STANDARD_CELLS; i++)
+    {
+        standardCells[i].currentColor = DEFAULT;
+    }
+}
+
+// IN GAME FUNCTIONS //
 
 HuntResult get_nearest_hunt_for_single(Player player, int max)
 {
@@ -210,7 +216,7 @@ void move_to_x(Player player)
         player.pieces[index].direction = direction;
         player.piecesInBase--;
 
-        printf("\n%s player moves piece %s%d to the starting point. \n", colorNames[player.color], colorNames[player.color][0], index + 1);
+        printf("\n%s player moves piece %c%d to the starting point. \n", colorNames[player.color], colorNames[player.color][0], index + 1);
         printf("%s player now has %d/4 on pieces on the board and %d/4 pieces on the base.\n", colorNames[player.color], index + 1, player.piecesInBase);
     
 }
@@ -286,7 +292,7 @@ void standard_move(Player player, int value, int pieceNo)
     piece.position = newPosition;
     standardCells[piece.position].currentColor = color;
 
-    printf("\n%s moves piece %d from location %d to %d by %d units in %s direction.\n", colorNames[color], pieceNo, oldPostion, newPosition, direction[piece.direction]);
+    printf("\n%s moves piece %d from location %d to %d by %d units in %s direction.\n", colorNames[color], pieceNo, oldPostion, newPosition,value, direction[piece.direction]);
 }
 
 void capturing_move(Player players[],int cUser, HuntResult hunt){
@@ -296,7 +302,7 @@ void capturing_move(Player players[],int cUser, HuntResult hunt){
     for (int i = 0; i < PIECES; i++)
     {
         if(target.pieces[i].position == hunt.hunt){
-            reset_piece(target.pieces[i]);
+            // reset_piece(target.pieces[i]);
         }
     }
     int oldPos = players[cUser].pieces[hunt.pieceIndex].position;
@@ -320,17 +326,17 @@ void capturing_move(Player players[],int cUser, HuntResult hunt){
 
 }
 
-void reset_piece(Piece piece){
-    piece.position = -1;
-    piece.approchCount = 0;
-    piece.auraDuration = 0;
-    piece.auraType = DEFAULT;
-    piece.blockDirection = 0;
-    piece.capturedPieces = 0;
-    piece.isBlocked = false;
-    piece.status = BASE;
-    piece.toWin = 52;    
-}
+// void reset_piece(Piece piece){
+//     piece.position = -1;
+//     piece.approchCount = 0;
+//     piece.auraDuration = 0;
+//     piece.auraType = DEFAULT;
+//     piece.blockDirection = 0;
+//     piece.capturedPieces = 0;
+//     piece.isBlocked = false;
+//     piece.status = BASE;
+//     piece.toWin = 52;    
+// }
 
 int get_board_count(Player player){
     return 4 - (player.piecesInBase + player.piecesInHome);

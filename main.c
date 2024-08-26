@@ -14,27 +14,27 @@ int main()
     // before game begins
     pre_message();
 
-    initialize_players(&players);
+    initialize_players(players, &currentUser);
     initialize_board();
 
     // in game progress
     // while (true){
         
-        int dice = roll_dice();
-        HuntResult hunt = nearest_hunt(players[currentUser],dice);
+        // int dice = roll_dice();
+        // HuntResult hunt = nearest_hunt(players[currentUser],dice);
 
-        if (players[currentUser].color == RED){
-            printf("RED player rolled %d",dice);
-            if (dice == 6){
-                if (hunt.hunt != -1){
-                    hunting_move(players,currentUser,hunt);
-                } else if (players[currentUser].piecesInBase != 0){
-                    move_to_x(players[currentUser]);
-                }else {
-                    
-                }
-            }
-        }
+        // if (players[currentUser].color == RED){
+        //     printf("RED player rolled %d",dice);
+        //     if (dice == 6){
+        //         if (hunt.hunt != -1){
+        //             hunting_move(players,currentUser,hunt);
+        //         } else if (players[currentUser].piecesInBase != 0){
+        //             move_to_x(players[currentUser]);
+        //         }else {
+
+        //         }
+        //     }
+        // }
     // }
 
     return 0;
