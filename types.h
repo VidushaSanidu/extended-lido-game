@@ -52,11 +52,6 @@ typedef enum
     DEFAULT
 } Aura;
 
-typedef struct {
-    int hunt;
-    int pieceIndex;
-} HuntResult;
-
 // structures
 typedef struct
 {
@@ -89,6 +84,17 @@ typedef struct
     PlayerColor currentColor;
 } Cell;
 
+typedef struct {
+    int hunt;
+    int pieceIndex;
+} HuntResult;
+
+typedef struct {
+    Piece result;
+    int blockedPiece;
+    int blockedCell;
+} BlockedResult;
+
 // functions
 void pre_message();
 void initialize_players(Player *q[]);
@@ -97,9 +103,6 @@ void initializeQueue(Player *q[]);
 
 int roll_dice();
 void move_piece(Player *player, int piece_index, int roll, Player players[PLAYERS], int current_player);
-int can_move_from_base(Player *player, int roll);
-void print_board(Player players[PLAYERS]);
-int has_won(Player *player);
 void capture_piece(Player players[PLAYERS], int current_player, int position);
 
 void move_to_x (Player player);

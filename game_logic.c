@@ -3,6 +3,7 @@
 #include <time.h>
 #include "types.h"
 
+// constant data
 const int START_POINTS[PLAYERS] = {50, 11, 24, 37};      // Starting positions for Y, B, R, G
 const int APPROACH_POSITIONS[PLAYERS] = {0, 13, 26, 39}; // Last cell before home straight for Y, B, R, G
 const int HOME_ENTRIES[PLAYERS] = {51, 12, 25, 38};      // First position in the home straight for Y, B, R, G
@@ -23,7 +24,7 @@ PlayerColor get_color(int num)
     else if (num == 1)
         return BLUE;
     else if (num == 1)
-        return BLUE;
+        return RED;
     else
         return GREEN;
 }
@@ -168,7 +169,7 @@ HuntResult get_nearest_hunt_for_block(Player player, int max)
                     }
                 }
             }else{
-                for (int j = player.pieces[i].position; j < max; j++)
+                for (int j = player.pieces[i].position; j > max; j--)
                 {
                     if (standardCells[j].noOfPiece > standardCells[i].noOfPiece && standardCells[j].currentColor != player.color) break;
                     if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color && gap > player.pieces[i].toWin)
@@ -198,8 +199,6 @@ HuntResult nearest_hunt(Player player, int max){
 
 void move_to_x(Player player)
 {
-    if (player.piecesInBase > 0)
-    {
         int index = 4 - player.piecesInBase;
         int position = START_POINTS[player.color];
         int direction = coin_toss();
@@ -213,12 +212,67 @@ void move_to_x(Player player)
 
         printf("\n%s player moves piece %s%d to the starting point. \n", colorNames[player.color], colorNames[player.color][0], index + 1);
         printf("%s player now has %d/4 on pieces on the board and %d/4 pieces on the base.\n", colorNames[player.color], index + 1, player.piecesInBase);
-    }
+    
 }
 
-void standard_move(Piece piece, int value, int pieceNo)
+BlockedResult find_non_blockable_piece(Player player,int max){
+    int gap = 60;
+    BlockedResult data;
+    data.result.position = -1;
+    int blockedPiece = -1;
+    int blockedCell = -1;
+
+    for (int i = 0; i < PIECES; i++)
+    {
+        if (player.pieces[i].status == ONTRACK && player.pieces[i].isBlocked == false)
+        {
+            int isBlocked = false;
+            if (player.pieces[i].direction == clock)
+            {
+                for (int j = player.pieces[i].position; j < max; j++)
+                {
+                    if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color)
+                    {
+                        blockedPiece = i;
+                        blockedCell = j;  
+                        isBlocked = true;
+                        break;             
+                    }
+
+                }
+                if (standardCells[player.pieces[i].position + max].noOfPiece == 0 && player.pieces[i].toWin < gap && isBlocked == false ){
+                    data.result = player.pieces[i];
+                }
+
+            }else{
+                for (int j = player.pieces[i].position; j > max; j--)
+                {
+                    if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color)
+                    {
+                        blockedPiece = i;
+                        blockedCell = j;  
+                        isBlocked = true;
+                        break;             
+                    }
+
+                }
+                if (standardCells[player.pieces[i].position - max].noOfPiece == 0 && player.pieces[i].toWin < gap && isBlocked == false ){
+                    data.result = player.pieces[i];
+                }
+            }
+        }
+    }
+    if (data.result.position != -1){
+        data.blockedCell = blockedCell;
+        data.blockedPiece = blockedPiece;
+    }
+    return data;
+}
+
+void standard_move(Player player, int value, int pieceNo)
 {
-    PlayerColor color = standardCells[piece.position].currentColor;
+    Piece piece;
+    PlayerColor color = player.color;
     int oldPostion = piece.position;
     int newPosition;
     if (piece.direction == clock)
@@ -237,6 +291,7 @@ void standard_move(Piece piece, int value, int pieceNo)
 
 void capturing_move(Player players[],int cUser, HuntResult hunt){
     Player target = players[standardCells[hunt.hunt].currentColor];
+    target.piecesInBase ++;
 
     for (int i = 0; i < PIECES; i++)
     {
@@ -245,6 +300,8 @@ void capturing_move(Player players[],int cUser, HuntResult hunt){
         }
     }
     int oldPos = players[cUser].pieces[hunt.pieceIndex].position;
+    int onBoard = get_board_count(players[cUser]);
+
     for (int i = 0; i < PIECES; i++)
     {
         if(players[cUser].pieces[i].position == oldPos){
@@ -258,6 +315,9 @@ void capturing_move(Player players[],int cUser, HuntResult hunt){
     standardCells[oldPos].currentColor = DEFAULT;
     standardCells[oldPos].noOfPiece = 0;
 
+    printf("\n%s pieces lands on square %d, captures %s, and returns it to the base.\n",colorNames[cUser],hunt.hunt,colorNames[target.color]);
+    printf("%s player now has %d/4 on pieces on the board and %d/4 pieces on the base.\n",colorNames[cUser],onBoard,players[cUser].piecesInBase);
+
 }
 
 void reset_piece(Piece piece){
@@ -270,6 +330,10 @@ void reset_piece(Piece piece){
     piece.isBlocked = false;
     piece.status = BASE;
     piece.toWin = 52;    
+}
+
+int get_board_count(Player player){
+    return 4 - (player.piecesInBase + player.piecesInHome);
 }
 
 
