@@ -8,6 +8,9 @@
 #define antiClock 1
 #define clock 0
 
+// global variables
+extern Player players[4];
+
 // constants
 #define DICE_SIDES 6
 
@@ -20,7 +23,6 @@
 #define KOTUWA_I 27
 #define PITA_KOTUWA_I 46
 
-#define WINNING_POSITION 58
 
 #define START_POINTS_V {2, 15, 28, 41}
 #define APPROACH_POSITIONS_V {0, 13, 26, 39}
@@ -90,8 +92,8 @@ typedef struct
 } Cell;
 
 typedef struct {
-    int hunt;
-    int pieceIndex;
+    int pieceNo;
+    int huntIndex;
 } HuntResult;
 
 typedef struct {
@@ -102,18 +104,23 @@ typedef struct {
 
 // functions
 void pre_message();
-void initialize_players(Player players[], int *current);
+void initialize_players();
 void initialize_board();
 void initialize_queue(Player q[]);
 
 int roll_dice();
 int coin_toss();
-
-void move_piece(Player *player, int piece_index, int roll, Player players[PLAYERS], int current_player);
-void capture_piece(Player players[PLAYERS], int current_player, int position);
-
-void move_to_x (Player player);
-HuntResult nearest_hunt(Player player, int max);
+int find_gap(Piece piece);
 int get_board_count(Player player);
+
+void single_move(Player *player, int pieceIndex, int roll);
+void block_move(Player *player, int pieceIndex, int roll);
+void move_to_x(Player player);
+void handle_mystery(Player *player,int pieceIndex,int option);
+HuntResult get_nearest_hunt_for_single(Player player, int max);
+HuntResult get_nearest_hunt_for_block(Player player, int max);
+HuntResult nearest_hunt(Player player, int max);
+void capturing_move(Player players[], int cUser, HuntResult hunt,int roll);
+
 
 #endif
