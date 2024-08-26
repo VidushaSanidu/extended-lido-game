@@ -26,7 +26,6 @@ extern Player players[4];
 
 #define START_POINTS_V {2, 15, 28, 41}
 #define APPROACH_POSITIONS_V {0, 13, 26, 39}
-// #define BAWANATOWIN_V {42, 4, 17, 30}
 
 // enums
 typedef enum
@@ -69,7 +68,6 @@ typedef struct
     int capturedPieces;
     int straightCount;
     int approchCount;
-    int isBlocked;
     int blockDirection;
     Aura auraType;
     int auraDuration;
@@ -115,7 +113,7 @@ void reset_piece(PlayerColor color, int peiceNo);
 int get_board_count(Player player);
 
 void single_move(PlayerColor index, int pieceIndex, int roll);
-void block_move(Player *player, int pieceIndex, int roll);
+void block_move(PlayerColor index, int pieceIndex, int roll);
 void move_to_x(Player player);
 void handle_mystery(PlayerColor index, int pieceIndex, int option);
 
