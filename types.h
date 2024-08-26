@@ -104,21 +104,26 @@ typedef struct {
 
 // functions
 void pre_message();
-void initialize_players();
+void initialize_players(int *current);
 void initialize_board();
-void initialize_queue(Player q[]);
+void initialize_queue();
 
 int roll_dice();
 int coin_toss();
 int find_gap(Piece piece);
+void reset_piece(PlayerColor color, int peiceNo);
 int get_board_count(Player player);
 
-void single_move(Player *player, int pieceIndex, int roll);
+void single_move(PlayerColor index, int pieceIndex, int roll);
 void block_move(Player *player, int pieceIndex, int roll);
 void move_to_x(Player player);
-void handle_mystery(Player *player,int pieceIndex,int option);
+void handle_mystery(PlayerColor index, int pieceIndex, int option);
+
 HuntResult get_nearest_hunt_for_single(Player player, int max);
 HuntResult get_nearest_hunt_for_block(Player player, int max);
+
+void single_capturing_move(int cUser, HuntResult hunt,int roll);
+
 HuntResult nearest_hunt(Player player, int max);
 void capturing_move(Player players[], int cUser, HuntResult hunt,int roll);
 

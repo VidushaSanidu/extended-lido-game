@@ -116,22 +116,22 @@ void initialize_board()
 // IN GAME FUNCTIONS //
 
 // handle movement when no blocks in front => win | land on mystery
-void single_move(Player *player, int pieceIndex, int roll)
+void single_move(PlayerColor index, int pieceIndex, int roll)
 {
-    Piece *piece = &player->pieces[pieceIndex];
+    Piece *piece = players[index].pieces[pieceIndex];
     int newPosition;
     if (piece->direction == clock)
     {
         newPosition = (piece->position + roll);
         for (int i = piece->position; i <= newPosition; i++)
         {
-            if (APPROACH_POSITIONS[player->color] == i)
+            if (APPROACH_POSITIONS[players[index].color] == i)
             {
                 int gap = HOME_STRAIGHT_CELLS - abs(newPosition - i);
                 if (piece->capturedPieces > 0 || gap <= 0)
                 {
                     piece->status = HOME;
-                    player->piecesInHome++;
+                    players[index].piecesInHome ++;
                     return;
                 }
                 piece->straightCount = gap;
@@ -145,7 +145,7 @@ void single_move(Player *player, int pieceIndex, int roll)
         newPosition = (piece->position - roll);
         for (int i = piece->position; i >= newPosition; i--)
         {
-            if (APPROACH_POSITIONS[player->color] == i)
+            if (APPROACH_POSITIONS[players[index].color] == i)
             {
                 piece->approchCount++;
                 if (piece->approchCount > 1)
@@ -155,7 +155,7 @@ void single_move(Player *player, int pieceIndex, int roll)
                     if (piece->capturedPieces > 0 || gap <= 0)
                     {
                         piece->status = HOME;
-                        player->piecesInHome++;
+                        players[index].piecesInHome ++;
                         return;
                     }
                     piece->straightCount = gap;
@@ -165,12 +165,21 @@ void single_move(Player *player, int pieceIndex, int roll)
             }
         }
     }
+    int old = piece->position;
+    standardCells[old].noOfPiece --;
+    standardCells[old].currentColor = DEFAULT;
+
     piece->position = newPosition % STANDARD_CELLS;
     if (standardCells[piece->position].type == MYSTERY)
     {
         int option = roll_dice();
-        handle_mystery(player, pieceIndex, option);
+        handle_mystery(players[index].color, pieceIndex, option);
+    }else
+    {
+        standardCells[piece->position].noOfPiece ++;
+        standardCells[piece->position].currentColor = colorNames[index];
     }
+    
 }
 
 void block_move(Player *player, int start, int roll)
@@ -237,27 +246,29 @@ void block_move(Player *player, int start, int roll)
 }
 
 // handle when land on mystery cell
-void handle_mystery(Player *player, int pieceIndex, int option)
+void handle_mystery(PlayerColor index, int pieceIndex, int option)
 {
-    Piece *piece = &player->pieces[pieceIndex];
-    printf("\n%s player lands on a mystery\n", colorNames[player->color]);
+    Piece *piece = players[index].pieces[pieceIndex];
+    printf("\n%s player lands on a mystery\n", colorNames[index]);
 
     switch (option)
     {
     case 1:
-        printf("%s piece %d teleported to Bhawana.\n", colorNames[player->color], pieceIndex + 1);
+        printf("%s piece %d teleported to Bhawana.\n", colorNames[index], pieceIndex + 1);
         piece->position = BHAWANA_I;
+        standardCells[piece->position].noOfPiece ++;
+        standardCells[piece->position].currentColor = colorNames[index];
 
         int aura = coin_toss();
         if (aura == true)
         {
-            printf("%s piece %d  feels energized, and movement speed doubles.\n", colorNames[player->color], pieceIndex + 1);
+            printf("%s piece %d  feels energized, and movement speed doubles.\n", colorNames[index], pieceIndex + 1);
             piece->auraDuration = 4;
             piece->auraType = POWERED;
         }
         else
         {
-            printf("%s piece %d  feels sick, and movement speed halves..\n", colorNames[player->color], pieceIndex + 1);
+            printf("%s piece %d  feels sick, and movement speed halves..\n", colorNames[index], pieceIndex + 1);
             piece->auraDuration = 4;
             piece->auraType = SICK;
         }
@@ -265,47 +276,55 @@ void handle_mystery(Player *player, int pieceIndex, int option)
         break;
 
     case 2:
-        printf("%s piece %d teleported to Kotuwa.\n", colorNames[player->color], pieceIndex + 1);
+        printf("%s piece %d teleported to Kotuwa.\n", colorNames[index], pieceIndex + 1);
         piece->position = KOTUWA_I;
+        standardCells[piece->position].noOfPiece ++;
+        standardCells[piece->position].currentColor = colorNames[index];
 
-        printf("%s piece %d attends briefing and cannot move for four rounds.\n", colorNames[player->color], pieceIndex + 1);
+        printf("%s piece %d attends briefing and cannot move for four rounds.\n", colorNames[index], pieceIndex + 1);
         piece->auraDuration = 4;
         piece->auraType = FREEZE;
 
         break;
 
     case 3:
-        printf("%s piece %d teleported to Pita-Kotuwa.\n", colorNames[player->color], pieceIndex + 1);
+        printf("%s piece %d teleported to Pita-Kotuwa.\n", colorNames[index], pieceIndex + 1);
         piece->position = PITA_KOTUWA_I;
 
         if (piece->direction == clock)
         {
-            printf("%s piece %d which was moving clockwise, has changed to moving coun- terclockwise.\n", colorNames[player->color], pieceIndex + 1);
+            printf("%s piece %d which was moving clockwise, has changed to moving coun- terclockwise.\n", colorNames[index], pieceIndex + 1);
             piece->direction = antiClock;
+            standardCells[piece->position].noOfPiece ++;
+            standardCells[piece->position].currentColor = colorNames[index];
         }
         else
         {
-            printf("%s piece %d is moving in a counterclockwise direction. Teleporting to Kotuwa from Pita-Kotuwa.\n", colorNames[player->color], pieceIndex + 1);
-            handle_mystery(player, pieceIndex, 2);
+            printf("%s piece %d is moving in a counterclockwise direction. Teleporting to Kotuwa from Pita-Kotuwa.\n", colorNames[index], pieceIndex + 1);
+            handle_mystery(index, pieceIndex, 2);
         }
 
         break;
 
     case 4:
-        printf("%s piece %d teleported to Base.\n", colorNames[player->color], pieceIndex + 1);
-        reset_piece(*piece);
+        printf("%s piece %d teleported to Base.\n", colorNames[index], pieceIndex + 1);
+        reset_piece(index,pieceIndex);
 
         break;
 
     case 5:
-        printf("%s piece %d teleported to startPoint.\n", colorNames[player->color], pieceIndex + 1);
-        piece->position = START_POINTS[player->color];
+        printf("%s piece %d teleported to startPoint.\n", colorNames[index], pieceIndex + 1);
+        piece->position = START_POINTS[index];
+        standardCells[piece->position].noOfPiece ++;
+        standardCells[piece->position].currentColor = colorNames[index];
 
         break;
 
     case 6:
-        printf("%s piece %d teleported to Approch cell.\n", colorNames[player->color], pieceIndex + 1);
-        piece->position = APPROACH_POSITIONS[player->color];
+        printf("%s piece %d teleported to Approch cell.\n", colorNames[index], pieceIndex + 1);
+        piece->position = APPROACH_POSITIONS[index];
+        standardCells[piece->position].noOfPiece ++;
+        standardCells[piece->position].currentColor = colorNames[index];
 
         break;
 
@@ -518,56 +537,38 @@ void standard_move(Player player, int value, int pieceNo)
     printf("\n%s moves piece %d from location %d to %d by %d units in %s direction.\n", colorNames[color], pieceNo, oldPostion, newPosition, value, direction[piece.direction]);
 }
 
-void capturing_move(Player players[], int cUser, HuntResult hunt,int roll)
+void single_capturing_move(int cUser, HuntResult hunt,int roll)
 {
-    Player target = players[standardCells[hunt.hunt].currentColor];
+    Player target = players[standardCells[hunt.huntIndex].currentColor];
 
     for (int i = 0; i < PIECES; i++)
     {
-        if (target.pieces[i].position == hunt.hunt)
+        if (target.pieces[i].position == hunt.huntIndex)
         {
-            reset_piece(target.pieces[i]);
-            target.piecesInBase++;
+            reset_piece(target.color,i);
+            players[target.color].piecesInBase++;
         }
     }
-    int oldPos = players[cUser].pieces[hunt.pieceIndex].position;
+    int oldPos = players[cUser].pieces[hunt.pieceNo].position;
     int onBoard = get_board_count(players[cUser]);
 
-    if (standardCells[oldPos].noOfPiece == 1){                              // 712
-        move(&players[cUser],hunt.pieceIndex,roll);
-        players[cUser].pieces[hunt.pieceIndex].capturedPieces ++;
+    single_move(cUser,hunt.pieceNo,roll);
+    players[cUser].pieces[hunt.pieceNo].capturedPieces ++;
 
-    }else {
-
-    }
-
-    for (int i = 0; i < PIECES; i++)
-    {
-        if (players[cUser].pieces[i].position == oldPos)
-        {
-            move(players[cUser], i, );
-            players[cUser].pieces[i].capturedPieces++;
-        }
-    }
-    standardCells[hunt.hunt].currentColor = standardCells[oldPos].currentColor;
-    standardCells[hunt.hunt].noOfPiece = standardCells[oldPos].noOfPiece;
-    standardCells[oldPos].currentColor = DEFAULT;
-    standardCells[oldPos].noOfPiece = 0;
-
-    printf("\n%s pieces lands on square %d, captures %s, and returns it to the base.\n", colorNames[cUser], hunt.hunt, colorNames[target.color]);
+    printf("\n%s pieces lands on square %d, captures %s, and returns it to the base.\n", colorNames[cUser], hunt.huntIndex, colorNames[target.color]);
     printf("%s player now has %d/4 on pieces on the board and %d/4 pieces on the base.\n", colorNames[cUser], onBoard, players[cUser].piecesInBase);
 }
 
-void reset_piece(Piece piece)
+void reset_piece(PlayerColor color, int peiceNo)
 {
-    piece.position = -1;
-    piece.approchCount = 0;
-    piece.auraDuration = 0;
-    piece.auraType = DEFAULT;
-    piece.blockDirection = 0;
-    piece.capturedPieces = 0;
-    piece.isBlocked = false;
-    piece.status = BASE;
+    players[color].pieces[peiceNo].position = -1;
+    players[color].pieces[peiceNo].approchCount = 0;
+    players[color].pieces[peiceNo].auraDuration = 0;
+    players[color].pieces[peiceNo].auraType = DEFAULT;
+    players[color].pieces[peiceNo].blockDirection = 0;
+    players[color].pieces[peiceNo].capturedPieces = 0;
+    players[color].pieces[peiceNo].isBlocked = false;
+    players[color].pieces[peiceNo].status = BASE;
 }
 
 int get_board_count(Player player)
