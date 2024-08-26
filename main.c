@@ -25,6 +25,9 @@ int main()
         HuntResult singleHunt = get_nearest_hunt_for_single(players[currentUser],dice);
         HuntResult blockHunt = get_nearest_hunt_for_block(players[currentUser],dice);
 
+        BlockedResult singleBlock = find_non_blockable_single(players[currentUser],dice);
+        BlockedResult blockBlock = find_non_blockable_block(players[currentUser],dice);
+
         if (players[currentUser].color == RED){
             printf("RED player rolled %d",dice);
             if (dice == 6){

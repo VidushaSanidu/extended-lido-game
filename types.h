@@ -95,9 +95,8 @@ typedef struct {
 } HuntResult;
 
 typedef struct {
-    Piece result;
-    int blockedPiece;
-    int blockedCell;
+    int pieceNo;
+    int prevIndex;
 } BlockedResult;
 
 // functions
@@ -119,10 +118,11 @@ void handle_mystery(PlayerColor index, int pieceIndex, int option);
 
 HuntResult get_nearest_hunt_for_single(Player player, int max);
 HuntResult get_nearest_hunt_for_block(Player player, int max);
+BlockedResult find_non_blockable_single(Player player, int max);
+BlockedResult find_non_blockable_block(Player player, int max);
 
 void single_capturing_move(int cUser, HuntResult hunt,int roll);
 
-HuntResult nearest_hunt(Player player, int max);
 void capturing_move(Player players[], int cUser, HuntResult hunt,int roll);
 
 
