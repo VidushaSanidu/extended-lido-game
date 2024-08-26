@@ -453,6 +453,7 @@ HuntResult get_nearest_hunt_for_block(Player player, int max)
     return result;
 }
 
+// find non blockabale free slot for single piece
 BlockedResult find_non_blockable_single(Player player, int max)
 {
     int gap = 60;
@@ -507,6 +508,7 @@ BlockedResult find_non_blockable_single(Player player, int max)
     return data;
 }
 
+// find non blockabale free slot for piece block
 BlockedResult find_non_blockable_block(Player player, int max)
 {
     int gap = 60;
@@ -566,6 +568,7 @@ BlockedResult find_non_blockable_block(Player player, int max)
     return data;
 }
 
+// find a way to create a block
 FindBlockResult find_blocks(Player player, int max)
 {
     FindBlockResult data;
@@ -613,6 +616,7 @@ FindBlockResult find_blocks(Player player, int max)
     return data;
 }
 
+// find any mystory box first
 BoxResult find_mystory_box(Player player, int max)
 {
     BoxResult data;
@@ -660,6 +664,7 @@ BoxResult find_mystory_box(Player player, int max)
     return data;
 }
 
+// movement functions // 
 void move_to_x(Player player)
 {
     int index = 4 - player.piecesInBase;
@@ -718,6 +723,39 @@ void single_capturing_move(int cUser, HuntResult hunt, int roll)
     printf("%s player now has %d/4 on pieces on the board and %d/4 pieces on the base.\n", colorNames[cUser], onBoard, players[cUser].piecesInBase);
 }
 
+void block_capturing_move(int cUser, HuntResult hunt, int roll)
+{
+    Player target = players[standardCells[hunt.huntIndex].currentColor];
+
+    for (int i = 0; i < PIECES; i++)
+    {
+        if (target.pieces[i].position == hunt.huntIndex)
+        {
+            reset_piece(target.color, i);
+            players[target.color].piecesInBase++;
+        }
+    }
+    int oldPos = players[cUser].pieces[hunt.pieceNo].position;
+    int onBoard = get_board_count(players[cUser]);
+
+    block_move(cUser, hunt.pieceNo, roll);
+
+    for (int i = 0; i < PIECES; i++)
+    {
+        if (players[cUser].pieces[i].position = hunt.huntIndex)
+        {
+            players[cUser].pieces[i].capturedPieces++;
+        }
+        
+    }
+
+    printf("\n%s pieces lands on square %d, captures %s, and returns it to the base.\n", colorNames[cUser], hunt.huntIndex, colorNames[target.color]);
+    printf("%s player now has %d/4 on pieces on the board and %d/4 pieces on the base.\n", colorNames[cUser], onBoard, players[cUser].piecesInBase);
+}
+
+
+// other // 
+
 void reset_piece(PlayerColor color, int peiceNo)
 {
     players[color].pieces[peiceNo].position = -1;
@@ -734,6 +772,3 @@ int get_board_count(Player player)
     return 4 - (player.piecesInBase + player.piecesInHome);
 }
 
-// void blocking_move(Piece piece, int value, int pieceNo)
-// {
-// }
