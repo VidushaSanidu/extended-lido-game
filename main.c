@@ -7,7 +7,7 @@ int main()
 {
     Player players[4];
     int currentUser = 0;
-    int winners[4];
+    int winners = 0;
 
     srand(time(NULL));
 
@@ -18,7 +18,7 @@ int main()
     initialize_board();
 
     // in game progress
-    // while (true){
+    while (winners <= 3){
         
         // int dice = roll_dice();
         // HuntResult hunt = nearest_hunt(players[currentUser],dice);
@@ -35,7 +35,7 @@ int main()
         //         }
         //     }
         // }
-    // }
+    }
 
     return 0;
 }

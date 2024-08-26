@@ -15,16 +15,16 @@
 #define PIECES 4
 
 #define STANDARD_CELLS 52
-#define HOME_STRAIGHT_CELLS 5
+#define HOME_STRAIGHT_CELLS 6
 #define BHAWANA_I 9
 #define KOTUWA_I 27
 #define PITA_KOTUWA_I 46
 
 #define WINNING_POSITION 58
 
-#define START_POINTS_V {50, 11, 24, 37}
-#define APPROACH_POSITIONS_V {50, 11, 24, 37}
-#define HOME_ENTRIES_V {50, 11, 24, 37}
+#define START_POINTS_V {2, 15, 28, 41}
+#define APPROACH_POSITIONS_V {0, 13, 26, 39}
+// #define BAWANATOWIN_V {42, 4, 17, 30}
 
 // enums
 typedef enum
@@ -47,13 +47,15 @@ typedef enum
 {
     BASE,
     HOME,
+    STRAIGHT,
     ONTRACK
 } Status;
 typedef enum
 {
     SICK,
     POWERED,
-    NORMAL
+    NORMAL,
+    FREEZE
 } Aura;
 
 // structures
@@ -64,7 +66,6 @@ typedef struct
     int direction;
     int capturedPieces;
     int straightCount;
-    int toWin;
     int approchCount;
     int isBlocked;
     int blockDirection;
@@ -107,6 +108,7 @@ void initialize_queue(Player q[]);
 
 int roll_dice();
 int coin_toss();
+
 void move_piece(Player *player, int piece_index, int roll, Player players[PLAYERS], int current_player);
 void capture_piece(Player players[PLAYERS], int current_player, int position);
 
