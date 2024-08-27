@@ -748,7 +748,7 @@ void block_capturing_move(int cUser, HuntResult hunt, int roll)
 
     for (int i = 0; i < PIECES; i++)
     {
-        if (players[cUser].pieces[i].position = hunt.huntIndex)
+        if (players[cUser].pieces[i].position == hunt.huntIndex)
         {
             players[cUser].pieces[i].capturedPieces++;
         }
@@ -782,12 +782,16 @@ void home_straight_move (int cUser,int dice){
     for (int i = 0; i < PIECES; i++)
     {
         if(players[cUser].pieces[i].status == STRAIGHT && players[cUser].pieces[i].straightCount == dice ){
-            players[cUser].pieces[i].status == HOME;
+            players[cUser].pieces[i].status = HOME;
             players[cUser].piecesInHome ++;
             printf("\n%s piece %d reach to HOME!\n",colorNames[cUser],i);
             continue;
         }
     }
+}
+
+void cantMove(int cUser){
+    printf("\n%s does not have other pieces in the board to move instead of the blocked piece. Ignoring the throw and moving on to the next player\n",colorNames[cUser]);
 }
 
 // other // 
@@ -822,13 +826,13 @@ void print_status(int mstry){
         {
             Piece p = players[i].pieces[j];
             if (p.status == BASE)
-                printf("Piece %d > Base.\n",i);
+                printf("Piece %d > Base.\n",j);
             else if (p.status == HOME)
-                printf("Piece %d > Home.\n",i);
+                printf("Piece %d > Home.\n",j);
             else if (p.status == STRAIGHT)
-                printf("Piece %d > Home Staright.\n",i);
+                printf("Piece %d > Home Staright.\n",j);
             else if (p.status == ONTRACK){
-                printf("Piece %d > %d.\n",i,p.position);
+                printf("Piece %d > %d.\n",j,p.position);
             }
         }
         printf("The mystery cell is at %d\n",mstry);
@@ -848,7 +852,7 @@ void generate_mystory(int *mystry){
 
     int random = (rand() % 51) + 1;
     if (standardCells[random].noOfPiece > 0)
-        generate_mystory(*mystry);
+        generate_mystory(mystry);
     
     *mystry = random;
     standardCells[random].type = MYSTERY;

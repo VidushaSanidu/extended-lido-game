@@ -144,7 +144,7 @@ void blockable_block_move(int cUser,int pieceNo, int value);
 void find_blocks_move(int cUser,int pieceNo, int value);
 void find_boxs_move(int cUser,int pieceNo, int value);
 void home_straight_move (int cUser,int dice);
-void cantMove();
+void cantMove(int cUser);
 
 void print_status(int myst);
 void print_winner(int current);
