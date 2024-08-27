@@ -672,18 +672,19 @@ BoxResult find_mystory_box(Player player, int max)
 }
 
 // movement functions // 
-void move_to_x(Player player)
+void move_to_x(int cUser)
 {
+    Player player = players[cUser];
     int index = 4 - player.piecesInBase;
     int position = START_POINTS[player.color];
     int direction = coin_toss();
 
-    player.pieces[index].position = position;
+    players[cUser].pieces[index].position = position;
     standardCells[position].noOfPiece++;
     standardCells[position].currentColor = player.color;
-    player.pieces[index].status = ONTRACK;
-    player.pieces[index].direction = direction;
-    player.piecesInBase--;
+    players[cUser].pieces[index].status = ONTRACK;
+    players[cUser].pieces[index].direction = direction;
+    players[cUser].piecesInBase--;
 
     printf("\n%s player moves piece %c%d to the starting point. \n", colorNames[player.color], colorNames[player.color][0], index + 1);
     printf("%s player now has %d/4 on pieces on the board and %d/4 pieces on the base.\n", colorNames[player.color], index + 1, player.piecesInBase);
@@ -835,9 +836,9 @@ void print_status(int mstry){
                 printf("Piece %d > %d.\n",j,p.position);
             }
         }
-        printf("The mystery cell is at %d\n",mstry);
-        printf("============================\n");
     }
+    printf("The mystery cell is at %d\n",mstry);
+    printf("============================\n");
     
 }
 

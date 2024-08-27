@@ -10,7 +10,7 @@ int main()
     int winners = 0;
     int currentUser = 0;
     int rounds = 0;
-    int mystry;
+    int mystry = -1;
 
     srand(time(NULL));
 
@@ -69,8 +69,8 @@ int main()
                     single_capturing_move(currentUser,singleHunt, dice);
                 } else if (blockHunt.huntIndex != -1){
                     block_capturing_move(currentUser,singleHunt, dice);
-                } else if (players[currentUser].piecesInBase != 0){
-                    move_to_x(players[currentUser]);
+                } else if (players[currentUser].piecesInBase != 0 && standardCells[2].noOfPiece == 0){
+                    move_to_x(currentUser);
                 }else {
                     if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
                         standard_single_move(currentUser,singleNoBlock.pieceNo,dice);
@@ -90,9 +90,7 @@ int main()
                     single_capturing_move(currentUser,singleHunt, dice);
                 } else if (blockHunt.huntIndex != -1){
                     block_capturing_move(currentUser,singleHunt, dice);
-                } else if (players[currentUser].piecesInBase != 0){
-                    move_to_x(players[currentUser]);
-                }else {
+                } else {
                     if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
                         standard_single_move(currentUser,singleNoBlock.pieceNo,dice);
                     } else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
@@ -111,13 +109,13 @@ int main()
         {
             printf("GREEN player rolled %d",dice);
             if (dice == 6){
-                if (singleHunt.huntIndex != -1){
+                if (players[currentUser].piecesInBase != 0 && standardCells[15].noOfPiece == 0){
+                    move_to_x(currentUser);
+                }else if (singleHunt.huntIndex != -1){
                     single_capturing_move(currentUser,singleHunt, dice);
                 } else if (blockHunt.huntIndex != -1){
                     block_capturing_move(currentUser,singleHunt, dice);
-                } else if (players[currentUser].piecesInBase != 0){
-                    move_to_x(players[currentUser]);
-                }else {
+                } else {
                     if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
                         standard_single_move(currentUser,singleNoBlock.pieceNo,dice);
                     } else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
@@ -158,8 +156,8 @@ int main()
                     single_capturing_move(currentUser,singleHunt, dice);
                 } else if (blockHunt.huntIndex != -1){
                     block_capturing_move(currentUser,singleHunt, dice);
-                } else if (players[currentUser].piecesInBase != 0){
-                    move_to_x(players[currentUser]);
+                } else if (players[currentUser].piecesInBase != 0 && standardCells[28].noOfPiece == 0){
+                    move_to_x(currentUser);
                 }else {
                     if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
                         standard_single_move(currentUser,singleNoBlock.pieceNo,dice);
@@ -201,8 +199,8 @@ int main()
                     single_capturing_move(currentUser,singleHunt, dice);
                 } else if (blockHunt.huntIndex != -1){
                     block_capturing_move(currentUser,singleHunt, dice);
-                } else if (players[currentUser].piecesInBase != 0){
-                    move_to_x(players[currentUser]);
+                } else if (players[currentUser].piecesInBase != 0 && standardCells[41].noOfPiece == 0){
+                    move_to_x(currentUser);
                 }else {
                     if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
                         standard_single_move(currentUser,singleNoBlock.pieceNo,dice);
@@ -245,6 +243,12 @@ int main()
         }
 
         rotateCount(&currentUser);
+
+        if (rounds == 20)
+        {
+            break;
+        }
+        
     }
 
     return 0;

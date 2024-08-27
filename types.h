@@ -108,6 +108,7 @@ typedef struct {
 
 // global variables
 extern Player players[4];
+extern Cell standardCells[STANDARD_CELLS];
 
 // functions
 void pre_message();
@@ -134,7 +135,7 @@ BlockedResult find_non_blockable_block(Player player, int max);
 BoxResult find_mystory_box(Player player, int max);
 FindBlockResult find_blocks(Player player, int max);
 
-void move_to_x(Player player);
+void move_to_x(int cUser);
 void single_capturing_move(int cUser, HuntResult hunt,int roll);
 void block_capturing_move(int cUser, HuntResult hunt,int roll);
 void standard_single_move(int cUser,int pieceNo, int roll);
