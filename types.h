@@ -142,8 +142,8 @@ void standard_single_move(int cUser,int pieceNo, int roll);
 void standard_block_move(int cUser,int pieceNo, int roll);
 void blockable_single_move(int cUser,int pieceNo, int value);
 void blockable_block_move(int cUser,int pieceNo, int value);
-void find_blocks_move(int cUser,int pieceNo, int value);
-void find_boxs_move(int cUser,int pieceNo, int value);
+void find_blocks_move(int cUser,int pieceNo, int value,int roll);
+void find_boxs_move(int cUser,int pieceNo, int value,int roll);
 void home_straight_move (int cUser,int dice);
 void cantMove(int cUser);
 

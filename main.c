@@ -22,28 +22,33 @@ int main()
     initialize_board();
 
     // in game progress
-    while (winners <= 3){
+    while (winners <= 3)
+    {
         if (currentUser == first)
-            rounds ++;
+            rounds++;
 
-        if ( rounds%4 == 3 ){
+        if (rounds % 4 == 3)
+        {
             generate_mystory(&mystry);
         }
 
-        if (rounds>1 && currentUser == first)
+        if (rounds > 1 && currentUser == first)
             print_status(mystry);
-        
 
-        if (players[currentUser].piecesInHome == 4){
+        if (players[currentUser].piecesInHome == 4)
+        {
             rotateCount(&currentUser);
             continue;
         }
-        
+
         int dice = roll_dice();
 
-        if (dice == 6){
-            players[currentUser].consecutiveSixes ++;
-        }else {
+        if (dice == 6)
+        {
+            players[currentUser].consecutiveSixes++;
+        }
+        else
+        {
             players[currentUser].consecutiveSixes = 0;
         }
 
@@ -54,201 +59,331 @@ int main()
             continue;
         }
 
-        home_straight_move(currentUser,dice);
+        home_straight_move(currentUser, dice);
 
-        HuntResult singleHunt = get_nearest_hunt_for_single(players[currentUser],dice);
-        HuntResult blockHunt = get_nearest_hunt_for_block(players[currentUser],dice);
+        HuntResult singleHunt = get_nearest_hunt_for_single(players[currentUser], dice);
+        HuntResult blockHunt = get_nearest_hunt_for_block(players[currentUser], dice);
 
-        BlockedResult singleNoBlock = find_non_blockable_single(players[currentUser],dice);
-        BlockedResult blockNoBlock = find_non_blockable_block(players[currentUser],dice);
+        BlockedResult singleNoBlock = find_non_blockable_single(players[currentUser], dice);
+        BlockedResult blockNoBlock = find_non_blockable_block(players[currentUser], dice);
 
-        if (players[currentUser].color == RED){
-            printf("RED player rolled %d",dice);
-            if (dice == 6){
-                if (singleHunt.huntIndex != -1){
-                    single_capturing_move(currentUser,singleHunt, dice);
-                } else if (blockHunt.huntIndex != -1){
-                    block_capturing_move(currentUser,singleHunt, dice);
-                } else if (players[currentUser].piecesInBase != 0 && standardCells[2].noOfPiece == 0){
-                    move_to_x(currentUser);
-                }else {
-                    if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
-                        standard_single_move(currentUser,singleNoBlock.pieceNo,dice);
-                    } else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
-                        standard_block_move(currentUser,blockNoBlock.pieceNo,dice);
-                    } else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0){
-                        blockable_single_move(currentUser,singleNoBlock.pieceNo,singleNoBlock.count);
-                    }else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0){
-                        blockable_block_move(currentUser,blockNoBlock.pieceNo,singleNoBlock.count);
-                    }else{
-                        cantMove(currentUser);
-                    }
-                }
-            }else
+        FindBlockResult findBlockSingle = find_blocks(players[currentUser], dice);
+        BoxResult boxResults = find_mystory_box(players[currentUser], dice);
+
+        if (players[currentUser].color == RED)
+        {
+            printf("RED player rolled %d", dice);
+            if (dice == 6)
             {
-                if (singleHunt.huntIndex != -1){
-                    single_capturing_move(currentUser,singleHunt, dice);
-                } else if (blockHunt.huntIndex != -1){
-                    block_capturing_move(currentUser,singleHunt, dice);
-                } else {
-                    if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
-                        standard_single_move(currentUser,singleNoBlock.pieceNo,dice);
-                    } else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
-                        standard_block_move(currentUser,blockNoBlock.pieceNo,dice);
-                    } else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0){
-                        blockable_single_move(currentUser,singleNoBlock.pieceNo,singleNoBlock.count);
-                    }else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0){
-                        blockable_block_move(currentUser,blockNoBlock.pieceNo,singleNoBlock.count);
-                    }else{
+                if (singleHunt.huntIndex != -1)
+                {
+                    single_capturing_move(currentUser, singleHunt, dice);
+                }
+                else if (blockHunt.huntIndex != -1)
+                {
+                    block_capturing_move(currentUser, singleHunt, dice);
+                }
+                else if (players[currentUser].piecesInBase != 0 && standardCells[2].noOfPiece == 0)
+                {
+                    move_to_x(currentUser);
+                }
+                else
+                {
+                    if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+                    {
+                        standard_single_move(currentUser, singleNoBlock.pieceNo, dice);
+                    }
+                    else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+                    {
+                        standard_block_move(currentUser, blockNoBlock.pieceNo, dice);
+                    }
+                    else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+                    {
+                        blockable_single_move(currentUser, singleNoBlock.pieceNo, singleNoBlock.count);
+                    }
+                    else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+                    {
+                        blockable_block_move(currentUser, blockNoBlock.pieceNo, singleNoBlock.count);
+                    }
+                    else
+                    {
                         cantMove(currentUser);
                     }
                 }
             }
-            
-        }else if (players[currentUser].color == GREEN)
-        {
-            printf("GREEN player rolled %d",dice);
-            if (dice == 6){
-                if (players[currentUser].piecesInBase != 0 && standardCells[15].noOfPiece == 0){
-                    move_to_x(currentUser);
-                }else if (singleHunt.huntIndex != -1){
-                    single_capturing_move(currentUser,singleHunt, dice);
-                } else if (blockHunt.huntIndex != -1){
-                    block_capturing_move(currentUser,singleHunt, dice);
-                } else {
-                    if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
-                        standard_single_move(currentUser,singleNoBlock.pieceNo,dice);
-                    } else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
-                        standard_block_move(currentUser,blockNoBlock.pieceNo,dice);
-                    } else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0){
-                        blockable_single_move(currentUser,singleNoBlock.pieceNo,singleNoBlock.count);
-                    }else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0){
-                        blockable_block_move(currentUser,blockNoBlock.pieceNo,singleNoBlock.count);
-                    }else{
-                        cantMove(currentUser);
-                    }
-                }
-            }else
+            else
             {
-                if (singleHunt.huntIndex != -1){
-                    single_capturing_move(currentUser,singleHunt, dice);
-                } else if (blockHunt.huntIndex != -1){
-                    block_capturing_move(currentUser,singleHunt, dice);
-                } else {
-                    if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
-                        standard_single_move(currentUser,singleNoBlock.pieceNo,dice);
-                    } else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
-                        standard_block_move(currentUser,blockNoBlock.pieceNo,dice);
-                    } else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0){
-                        blockable_single_move(currentUser,singleNoBlock.pieceNo,singleNoBlock.count);
-                    }else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0){
-                        blockable_block_move(currentUser,blockNoBlock.pieceNo,singleNoBlock.count);
-                    }else{
-                        cantMove(currentUser);
-                    }
+                if (singleHunt.huntIndex != -1)
+                {
+                    single_capturing_move(currentUser, singleHunt, dice);
                 }
-            }
-        }else if (players[currentUser].color == YELLOW)
-        {
-            printf("YELLOW player rolled %d",dice);
-            if (dice == 6){
-                if (singleHunt.huntIndex != -1){
-                    single_capturing_move(currentUser,singleHunt, dice);
-                } else if (blockHunt.huntIndex != -1){
-                    block_capturing_move(currentUser,singleHunt, dice);
-                } else if (players[currentUser].piecesInBase != 0 && standardCells[28].noOfPiece == 0){
-                    move_to_x(currentUser);
-                }else {
-                    if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
-                        standard_single_move(currentUser,singleNoBlock.pieceNo,dice);
-                    } else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
-                        standard_block_move(currentUser,blockNoBlock.pieceNo,dice);
-                    } else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0){
-                        blockable_single_move(currentUser,singleNoBlock.pieceNo,singleNoBlock.count);
-                    }else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0){
-                        blockable_block_move(currentUser,blockNoBlock.pieceNo,singleNoBlock.count);
-                    }else{
-                        cantMove(currentUser);
-                    }
+                else if (blockHunt.huntIndex != -1)
+                {
+                    block_capturing_move(currentUser, singleHunt, dice);
                 }
-            }else
-            {
-                if (singleHunt.huntIndex != -1){
-                    single_capturing_move(currentUser,singleHunt, dice);
-                } else if (blockHunt.huntIndex != -1){
-                    block_capturing_move(currentUser,singleHunt, dice);
-                } else {
-                    if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
-                        standard_single_move(currentUser,singleNoBlock.pieceNo,dice);
-                    } else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
-                        standard_block_move(currentUser,blockNoBlock.pieceNo,dice);
-                    } else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0){
-                        blockable_single_move(currentUser,singleNoBlock.pieceNo,singleNoBlock.count);
-                    }else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0){
-                        blockable_block_move(currentUser,blockNoBlock.pieceNo,singleNoBlock.count);
-                    }else{
-                        cantMove(currentUser);
+                else
+                {
+                    if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+                    {
+                        standard_single_move(currentUser, singleNoBlock.pieceNo, dice);
                     }
-                }
-            }
-        }else if (players[currentUser].color == BLUE)
-        {
-            printf("BLUE player rolled %d",dice);
-            if (dice == 6){
-                if (singleHunt.huntIndex != -1){
-                    single_capturing_move(currentUser,singleHunt, dice);
-                } else if (blockHunt.huntIndex != -1){
-                    block_capturing_move(currentUser,singleHunt, dice);
-                } else if (players[currentUser].piecesInBase != 0 && standardCells[41].noOfPiece == 0){
-                    move_to_x(currentUser);
-                }else {
-                    if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
-                        standard_single_move(currentUser,singleNoBlock.pieceNo,dice);
-                    } else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
-                        standard_block_move(currentUser,blockNoBlock.pieceNo,dice);
-                    } else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0){
-                        blockable_single_move(currentUser,singleNoBlock.pieceNo,singleNoBlock.count);
-                    }else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0){
-                        blockable_block_move(currentUser,blockNoBlock.pieceNo,singleNoBlock.count);
-                    }else{
-                        cantMove(currentUser);
+                    else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+                    {
+                        standard_block_move(currentUser, blockNoBlock.pieceNo, dice);
                     }
-                }
-            }else
-            {
-                if (singleHunt.huntIndex != -1){
-                    single_capturing_move(currentUser,singleHunt, dice);
-                } else if (blockHunt.huntIndex != -1){
-                    block_capturing_move(currentUser,singleHunt, dice);
-                } else {
-                    if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
-                        standard_single_move(currentUser,singleNoBlock.pieceNo,dice);
-                    } else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count <= -1){
-                        standard_block_move(currentUser,blockNoBlock.pieceNo,dice);
-                    } else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0){
-                        blockable_single_move(currentUser,singleNoBlock.pieceNo,singleNoBlock.count);
-                    }else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0){
-                        blockable_block_move(currentUser,blockNoBlock.pieceNo,singleNoBlock.count);
-                    }else{
+                    else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+                    {
+                        blockable_single_move(currentUser, singleNoBlock.pieceNo, singleNoBlock.count);
+                    }
+                    else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+                    {
+                        blockable_block_move(currentUser, blockNoBlock.pieceNo, singleNoBlock.count);
+                    }
+                    else
+                    {
                         cantMove(currentUser);
                     }
                 }
             }
         }
-        
+        else if (players[currentUser].color == GREEN)
+        {
+            printf("GREEN player rolled %d", dice);
+            if (dice == 6)
+            {
+                if (findBlockSingle.blockIndex != -1)
+                {
+                    find_blocks_move(currentUser, findBlockSingle.pieceNo, findBlockSingle.blockIndex, dice);
+                }
+                else if (players[currentUser].piecesInBase != 0 && standardCells[15].noOfPiece == 0)
+                {
+                    move_to_x(currentUser);
+                }
+                else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+                {
+                    standard_block_move(currentUser, blockNoBlock.pieceNo, dice);
+                }
+                else if (blockHunt.huntIndex != -1)
+                {
+                    block_capturing_move(currentUser, singleHunt, dice);
+                }
+                else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+                {
+                    standard_single_move(currentUser, singleNoBlock.pieceNo, dice);
+                }
+                else
+                {
+                    if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+                    {
+                        blockable_single_move(currentUser, singleNoBlock.pieceNo, singleNoBlock.count);
+                    }
+                    else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+                    {
+                        blockable_block_move(currentUser, blockNoBlock.pieceNo, singleNoBlock.count);
+                    }
+                    else
+                    {
+                        cantMove(currentUser);
+                    }
+                }
+            }
+            else
+            {
+                if (findBlockSingle.blockIndex != -1)
+                {
+                    find_blocks_move(currentUser, findBlockSingle.pieceNo, findBlockSingle.blockIndex, dice);
+                }
+                else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+                {
+                    standard_block_move(currentUser, blockNoBlock.pieceNo, dice);
+                }
+                else if (blockHunt.huntIndex != -1)
+                {
+                    block_capturing_move(currentUser, singleHunt, dice);
+                }
+                else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+                {
+                    standard_single_move(currentUser, singleNoBlock.pieceNo, dice);
+                }
+                else
+                {
+                    if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+                    {
+                        blockable_single_move(currentUser, singleNoBlock.pieceNo, singleNoBlock.count);
+                    }
+                    else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+                    {
+                        blockable_block_move(currentUser, blockNoBlock.pieceNo, singleNoBlock.count);
+                    }
+                    else
+                    {
+                        cantMove(currentUser);
+                    }
+                }
+            }
+        }
+        else if (players[currentUser].color == YELLOW)
+        {
+            printf("YELLOW player rolled %d", dice);
+            if (dice == 6)
+            {
+                if (players[currentUser].piecesInBase != 0 && standardCells[28].noOfPiece == 0)
+                {
+                    move_to_x(currentUser);
+                }
 
-        if (players[currentUser].piecesInHome == 4){
+                else if (blockHunt.huntIndex != -1)
+                {
+                    block_capturing_move(currentUser, singleHunt, dice);
+                }
+                else if (singleHunt.huntIndex != -1)
+                {
+                    single_capturing_move(currentUser, singleHunt, dice);
+                }
+                else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+                {
+                    standard_single_move(currentUser, singleNoBlock.pieceNo, dice);
+                }
+                else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+                {
+                    standard_block_move(currentUser, blockNoBlock.pieceNo, dice);
+                }
+                else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+                {
+                    blockable_single_move(currentUser, singleNoBlock.pieceNo, singleNoBlock.count);
+                }
+                else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+                {
+                    blockable_block_move(currentUser, blockNoBlock.pieceNo, singleNoBlock.count);
+                }
+                else
+                {
+                    cantMove(currentUser);
+                }
+            }
+            else
+            {
+                if (blockHunt.huntIndex != -1)
+                {
+                    block_capturing_move(currentUser, singleHunt, dice);
+                }
+                else if (singleHunt.huntIndex != -1)
+                {
+                    single_capturing_move(currentUser, singleHunt, dice);
+                }
+                else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+                {
+                    standard_single_move(currentUser, singleNoBlock.pieceNo, dice);
+                }
+                else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+                {
+                    standard_block_move(currentUser, blockNoBlock.pieceNo, dice);
+                }
+                else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+                {
+                    blockable_single_move(currentUser, singleNoBlock.pieceNo, singleNoBlock.count);
+                }
+                else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+                {
+                    blockable_block_move(currentUser, blockNoBlock.pieceNo, singleNoBlock.count);
+                }
+                else
+                {
+                    cantMove(currentUser);
+                }
+            }
+        }
+        else if (players[currentUser].color == BLUE)
+        {
+            printf("BLUE player rolled %d", dice);
+            if (dice == 6)
+            {
+                if (players[currentUser].piecesInBase != 0 && standardCells[28].noOfPiece == 0)
+                {
+                    move_to_x(currentUser);
+                }
+                else if (boxResults.boxIndex != -1 && players[currentUser].pieces[boxResults.pieceNo].direction == antiClock)
+                {
+                    find_boxs_move(currentUser, boxResults.pieceNo, boxResults.boxIndex, dice);
+                }
+                else if (blockHunt.huntIndex != -1)
+                {
+                    block_capturing_move(currentUser, singleHunt, dice);
+                }
+                else if (singleHunt.huntIndex != -1)
+                {
+                    single_capturing_move(currentUser, singleHunt, dice);
+                }
+                else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+                {
+                    standard_single_move(currentUser, singleNoBlock.pieceNo, dice);
+                }
+                else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+                {
+                    standard_block_move(currentUser, blockNoBlock.pieceNo, dice);
+                }
+                else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+                {
+                    blockable_single_move(currentUser, singleNoBlock.pieceNo, singleNoBlock.count);
+                }
+                else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+                {
+                    blockable_block_move(currentUser, blockNoBlock.pieceNo, singleNoBlock.count);
+                }
+                else
+                {
+                    cantMove(currentUser);
+                }
+            }
+            else
+            {
+                if (boxResults.boxIndex != -1 && players[currentUser].pieces[boxResults.pieceNo].direction == antiClock)
+                {
+                    find_boxs_move(currentUser, boxResults.pieceNo, boxResults.boxIndex, dice);
+                }
+                else if (blockHunt.huntIndex != -1)
+                {
+                    block_capturing_move(currentUser, singleHunt, dice);
+                }
+                else if (singleHunt.huntIndex != -1)
+                {
+                    single_capturing_move(currentUser, singleHunt, dice);
+                }
+                else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+                {
+                    standard_single_move(currentUser, singleNoBlock.pieceNo, dice);
+                }
+                else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+                {
+                    standard_block_move(currentUser, blockNoBlock.pieceNo, dice);
+                }
+                else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+                {
+                    blockable_single_move(currentUser, singleNoBlock.pieceNo, singleNoBlock.count);
+                }
+                else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+                {
+                    blockable_block_move(currentUser, blockNoBlock.pieceNo, singleNoBlock.count);
+                }
+                else
+                {
+                    cantMove(currentUser);
+                }
+            }
+        }
+
+        if (players[currentUser].piecesInHome == 4)
+        {
             print_winner(currentUser);
-            winners ++;
+            winners++;
         }
 
         rotateCount(&currentUser);
 
-        if (rounds == 20)
-        {
-            break;
-        }
-        
+        // if (rounds == 20)
+        // {
+        //     break;
+        // }
     }
 
     return 0;
