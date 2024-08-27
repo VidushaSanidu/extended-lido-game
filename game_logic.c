@@ -38,8 +38,11 @@ int coin_toss()
     return (rand() % 2) + 1;
 }
 
-// Standard path array
+void rotateCount(int *current){
+    *current = (*current + 1) % PLAYERS;
+}
 
+// Standard path array
 Cell standardCells[STANDARD_CELLS];
 
 // PRE GAME FUNCTIONS //
@@ -459,22 +462,23 @@ BlockedResult find_non_blockable_single(Player player, int max)
     int gap = 60;
     BlockedResult data;
     data.pieceNo = -1;
-    data.prevIndex = -1;
-    int prev = -1;
+    data.count = -1;
 
     for (int i = 0; i < PIECES; i++)
     {
         if (player.pieces[i].status == ONTRACK)
         {
             int isBlocked = false;
+            int count = 0;
             if (player.pieces[i].direction == clock)
             {
                 for (int j = player.pieces[i].position + 1; j <= max; j++)
                 {
+                    count++;
                     if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color)
                     {
                         isBlocked = true;
-                        prev = j - 1;
+                        count --;
                         break;
                     }
                 }
@@ -483,10 +487,11 @@ BlockedResult find_non_blockable_single(Player player, int max)
             {
                 for (int j = player.pieces[i].position - 1; j >= max; j--)
                 {
+                    count++;
                     if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color)
                     {
                         isBlocked = true;
-                        prev = j + 1;
+                        count --;
                         break;
                     }
                 }
@@ -497,11 +502,11 @@ BlockedResult find_non_blockable_single(Player player, int max)
                 gap = newGap;
                 data.pieceNo = i;
             }
-            else if (newGap < gap && isBlocked == true && prev != player.pieces[i].position )
+            else if (newGap < gap && isBlocked == true && count > 0)
             {
                 gap = newGap;
                 data.pieceNo = i;
-                data.prevIndex = prev;
+                data.count = count;
             }
         }
     }
@@ -514,8 +519,7 @@ BlockedResult find_non_blockable_block(Player player, int max)
     int gap = 60;
     BlockedResult data;
     data.pieceNo = -1;
-    data.prevIndex = -1;
-    int prev = -1;
+    data.count = -1;
 
     for (int i = 0; i < PIECES; i++)
     {
@@ -526,27 +530,30 @@ BlockedResult find_non_blockable_block(Player player, int max)
         int count = standardCells[piece.position].noOfPiece; 
         if ( count > 1)
         {
+            int countt = 0;
             int isBlocked = false;
             if (piece.blockDirection == clock)
             {
                 for (int j = piece.position + 1; j <= max/count; j++)
                 {
+                    countt ++;
                     if (standardCells[j].noOfPiece > count && standardCells[j].currentColor != player.color)
                     {
                         isBlocked = true;
-                        prev = j - 1;
+                        countt --;
                         break;
                     }
                 }
             }
             else
             {
+                countt ++;
                 for (int j = piece.position - 1; j >= max/count; j--)
                 {
                     if (standardCells[j].noOfPiece > count && standardCells[j].currentColor != player.color)
                     {
                         isBlocked = true;
-                        prev = j + 1;
+                        countt --;
                         break;
                     }
                 }
@@ -557,11 +564,11 @@ BlockedResult find_non_blockable_block(Player player, int max)
                 gap = newGap;
                 data.pieceNo = i;
             }
-            else if (newGap < gap && isBlocked == true && prev != piece.position )
+            else if (newGap < gap && isBlocked == true && countt > 0 )
             {
                 gap = newGap;
                 data.pieceNo = i;
-                data.prevIndex = prev;
+                data.count = countt * count;
             }
         }
     }
@@ -697,7 +704,7 @@ void standard_block_move(int cUser,int pieceNo, int roll)
     block_move(cUser,pieceNo,roll);
     int newPosition = players[cUser].pieces[pieceNo].position;
 
-    printf("\n%s moves pieces from location %d to %d by %d units in %s direction.\n", colorNames[cUser], oldPostion, newPosition, roll, direction[players[cUser].pieces[pieceNo].blockDirection]);
+    printf("\n%s moves pieces from location %d to %d in %s direction.\n", colorNames[cUser], oldPostion, newPosition, direction[players[cUser].pieces[pieceNo].blockDirection]);
 }
 
 void single_capturing_move(int cUser, HuntResult hunt, int roll)
@@ -752,6 +759,36 @@ void block_capturing_move(int cUser, HuntResult hunt, int roll)
     printf("%s player now has %d/4 on pieces on the board and %d/4 pieces on the base.\n", colorNames[cUser], onBoard, players[cUser].piecesInBase);
 }
 
+void blockable_single_move(int cUser,int pieceNo, int count)
+{
+
+    int oldPostion = players[cUser].pieces[pieceNo].position;
+    single_move(cUser,pieceNo,count);
+    int newPosition = players[cUser].pieces[pieceNo].position;
+
+    printf("\n%s does not have other pieces in the board to move instead of the blocked piece. Moved the piece which is the cell before the block.\n", colorNames[cUser]);
+}
+
+void blockable_block_move(int cUser,int pieceNo, int count)
+{
+    int oldPostion = players[cUser].pieces[pieceNo].position;
+    block_move(cUser,pieceNo,count*2);
+    int newPosition = players[cUser].pieces[pieceNo].position;
+
+    printf("\n%s does not have other pieces in the board to move instead of the blocked piece. Moved the piece which is the cell before the block.\n", colorNames[cUser]);
+}
+
+void home_straight_move (int cUser,int dice){
+    for (int i = 0; i < PIECES; i++)
+    {
+        if(players[cUser].pieces[i].status == STRAIGHT && players[cUser].pieces[i].straightCount == dice ){
+            players[cUser].pieces[i].status == HOME;
+            players[cUser].piecesInHome ++;
+            printf("\n%s piece %d reach to HOME!\n",colorNames[cUser],i);
+            continue;
+        }
+    }
+}
 
 // other // 
 
@@ -771,3 +808,16 @@ int get_board_count(Player player)
     return 4 - (player.piecesInBase + player.piecesInHome);
 }
 
+
+// generate mystory
+void generate_mystory(int *mystry){
+    if (standardCells[*mystry].type == MYSTERY)
+        standardCells[*mystry].type = BASIC;
+        
+    int random = (rand() % 51) + 1;
+    if (standardCells[random].noOfPiece > 0)
+        generate_mystory(*mystry);
+    
+    *mystry = random;
+    standardCells[random].type = MYSTERY;
+}

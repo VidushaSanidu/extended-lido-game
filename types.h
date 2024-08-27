@@ -93,7 +93,7 @@ typedef struct {
 
 typedef struct {
     int pieceNo;
-    int prevIndex;
+    int count;
 } BlockedResult;
 
 typedef struct {
@@ -120,6 +120,8 @@ int coin_toss();
 int find_gap(Piece piece);
 void reset_piece(PlayerColor color, int peiceNo);
 int get_board_count(Player player);
+void rotateCount(int *current);
+void generate_mystory(int *mystry);
 
 void single_move(PlayerColor index, int pieceIndex, int roll);
 void block_move(PlayerColor index, int pieceIndex, int roll);
@@ -136,6 +138,13 @@ void move_to_x(Player player);
 void single_capturing_move(int cUser, HuntResult hunt,int roll);
 void block_capturing_move(int cUser, HuntResult hunt,int roll);
 void standard_single_move(int cUser,int pieceNo, int roll);
+void standard_block_move(int cUser,int pieceNo, int roll);
+void blockable_single_move(int cUser,int pieceNo, int value);
+void blockable_block_move(int cUser,int pieceNo, int value);
+void find_blocks_move(int cUser,int pieceNo, int value);
+void find_boxs_move(int cUser,int pieceNo, int value);
+void home_straight_move (int cUser,int dice);
+void cantMove();
 
 
 #endif
