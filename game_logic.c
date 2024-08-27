@@ -809,11 +809,43 @@ int get_board_count(Player player)
 }
 
 
+// print status
+void print_status(int mstry){
+    for (int i = 0; i < PLAYERS; i++)
+    {
+        PlayerColor col = players[i].color;
+        printf("\n%s player now has %d/4 on pieces on the board and %d/4 pieces on the base.\n",colorNames[col],get_board_count(players[i]),players[i].piecesInBase);
+        printf("============================\n");
+        printf("Location of pieces %s\n",colorNames[col]);
+        printf("============================\n");
+        for (int j = 0; j < PIECES; j++)
+        {
+            Piece p = players[i].pieces[j];
+            if (p.status == BASE)
+                printf("Piece %d > Base.\n",i);
+            else if (p.status == HOME)
+                printf("Piece %d > Home.\n",i);
+            else if (p.status == STRAIGHT)
+                printf("Piece %d > Home Staright.\n",i);
+            else if (p.status == ONTRACK){
+                printf("Piece %d > %d.\n",i,p.position);
+            }
+        }
+        printf("The mystery cell is at %d\n",mstry);
+        printf("============================\n");
+    }
+    
+}
+
+void print_winner(int current){
+    printf("\n%s player wins!!!\n\n", colorNames[current]);
+}
+
 // generate mystory
 void generate_mystory(int *mystry){
     if (standardCells[*mystry].type == MYSTERY)
         standardCells[*mystry].type = BASIC;
-        
+
     int random = (rand() % 51) + 1;
     if (standardCells[random].noOfPiece > 0)
         generate_mystory(*mystry);
