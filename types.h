@@ -3,10 +3,10 @@
 
 // data types
 #define true 1
-#define false 0
+#define false 2
 
-#define antiClock 1
-#define clock 0
+#define antiClock 2
+#define clock 1
 
 // constants
 #define DICE_SIDES 6

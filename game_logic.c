@@ -173,12 +173,11 @@ void single_move(PlayerColor index, int pieceIndex, int roll)
             }
         }
     }
-    piece->position = newPosition % STANDARD_CELLS;
+    piece->position = (newPosition + STANDARD_CELLS) % STANDARD_CELLS;
     piece->blockDirection = -1;
     if (standardCells[piece->position].type == MYSTERY)
     {
-        int option = roll_dice();
-        handle_mystery(players[index].color, pieceIndex, option);
+        handle_mystery(players[index].color, pieceIndex, roll_dice());
     }
     else
     {
@@ -227,7 +226,7 @@ void block_move(PlayerColor index, int pieceIndex, int roll)
                     }
                 }
             }
-            piece->position = newPosition % STANDARD_CELLS;
+            piece->position = (newPosition + STANDARD_CELLS) % STANDARD_CELLS;
             standardCells[piece->position].noOfPiece++;
             standardCells[piece->position].currentColor = get_color(index);
         }
@@ -255,8 +254,7 @@ void handle_mystery(PlayerColor index, int pieceIndex, int option)
         standardCells[piece->position].noOfPiece++;
         standardCells[piece->position].currentColor = get_color(index);
 
-        int aura = coin_toss();
-        if (aura == true)
+        if (coin_toss() == true)
         {
             printf("%s piece %d  feels energized, and movement speed doubles.\n", colorNames[index], pieceIndex + 1);
             piece->auraDuration = 4;
@@ -682,17 +680,16 @@ void move_to_x(int cUser)
     Player player = players[cUser];
     int index = 4 - player.piecesInBase;
     int position = START_POINTS[player.color];
-    int direction = coin_toss();
 
     players[cUser].pieces[index].position = position;
     standardCells[position].noOfPiece++;
     standardCells[position].currentColor = player.color;
     players[cUser].pieces[index].status = ONTRACK;
-    players[cUser].pieces[index].direction = direction;
-    players[cUser].piecesInBase--;
+    players[cUser].pieces[index].direction = coin_toss() ;
+    players[cUser].piecesInBase -- ;
 
     printf("\n%s player moves piece %c%d to the starting point. \n", colorNames[player.color], colorNames[player.color][0], index + 1);
-    printf("%s player now has %d/4 on pieces on the board and %d/4 pieces on the base.\n", colorNames[player.color], index + 1, player.piecesInBase);
+    printf("%s player now has %d/4 pieces on the board and %d/4 pieces on the base.\n", colorNames[player.color], index + 1, players[cUser].piecesInBase);
 }
 
 void standard_single_move(int cUser, int pieceNo, int roll)
@@ -701,7 +698,7 @@ void standard_single_move(int cUser, int pieceNo, int roll)
     single_move(cUser, pieceNo, roll);
     int newPosition = players[cUser].pieces[pieceNo].position;
 
-    printf("\n%s moves piece %d from location %d to %d by %d units in %s direction.\n", colorNames[cUser], pieceNo, oldPostion, newPosition, roll, direction[players[cUser].pieces[pieceNo].direction]);
+    printf("\n%s moves piece %d from location %d to %d by %d units in %s direction.\n", colorNames[cUser], pieceNo +1, oldPostion, newPosition, roll, direction[players[cUser].pieces[pieceNo].direction - 1]);
 }
 
 void standard_block_move(int cUser, int pieceNo, int roll)
@@ -710,7 +707,7 @@ void standard_block_move(int cUser, int pieceNo, int roll)
     block_move(cUser, pieceNo, roll);
     int newPosition = players[cUser].pieces[pieceNo].position;
 
-    printf("\n%s moves pieces from location %d to %d in %s direction.\n", colorNames[cUser], oldPostion, newPosition, direction[players[cUser].pieces[pieceNo].blockDirection]);
+    printf("\n%s moves pieces from location %d to %d in %s direction.\n", colorNames[cUser], oldPostion, newPosition, direction[players[cUser].pieces[pieceNo].blockDirection -1]);
 }
 
 void single_capturing_move(int cUser, HuntResult hunt, int roll)
@@ -726,13 +723,13 @@ void single_capturing_move(int cUser, HuntResult hunt, int roll)
         }
     }
     int oldPos = players[cUser].pieces[hunt.pieceNo].position;
-    int onBoard = get_board_count(players[cUser]);
+    int onBoard = get_board_count(players[target.color]);
 
     single_move(cUser, hunt.pieceNo, roll);
     players[cUser].pieces[hunt.pieceNo].capturedPieces++;
 
     printf("\n%s pieces lands on square %d, captures %s, and returns it to the base.\n", colorNames[cUser], hunt.huntIndex, colorNames[target.color]);
-    printf("%s player now has %d/4 on pieces on the board and %d/4 pieces on the base.\n", colorNames[cUser], onBoard, players[cUser].piecesInBase);
+    printf("%s player now has %d/4 on pieces on the board and %d/4 pieces on the base.\n", colorNames[target.color], onBoard, players[target.color].piecesInBase);
 }
 
 void block_capturing_move(int cUser, HuntResult hunt, int roll)

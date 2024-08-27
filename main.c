@@ -22,16 +22,17 @@ int main()
     initialize_board();
 
     // in game progress
-    while (winners <= 3)
+    while (winners <= 0)
     {
         // count rounds
-        if (currentUser == first)
+        if (currentUser == first) {
             rounds++;
 
-        // generate mystery cell
-        if (rounds % 4 == 3)
-        {
-            generate_mystory(&mystry);
+            // generate mystery cell
+            if (rounds % 4 == 0)
+            {
+                generate_mystory(&mystry);
+            }
         }
 
         // print state after each round
@@ -88,13 +89,13 @@ int main()
             }
             else if (blockHunt.huntIndex != -1)
             {
-                block_capturing_move(currentUser, singleHunt, dice);
+                block_capturing_move(currentUser, blockHunt, dice);
             }
-            else if (dice == 6 && players[currentUser].piecesInBase != 0 && standardCells[2].noOfPiece == 0)
+            else if (dice == 6 && players[currentUser].piecesInBase != 0 && standardCells[28].noOfPiece == 0)
             {
                 move_to_x(currentUser);
             }
-            else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+            else if (singleNoBlock.pieceNo != -1 && singleNoBlock.count <= -1)
             {
                 standard_single_move(currentUser, singleNoBlock.pieceNo, dice);
             }
@@ -102,13 +103,13 @@ int main()
             {
                 standard_block_move(currentUser, blockNoBlock.pieceNo, dice);
             }
-            else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+            else if (singleNoBlock.pieceNo != -1 && singleNoBlock.count > 0)
             {
                 blockable_single_move(currentUser, singleNoBlock.pieceNo, singleNoBlock.count);
             }
             else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
             {
-                blockable_block_move(currentUser, blockNoBlock.pieceNo, singleNoBlock.count);
+                blockable_block_move(currentUser, blockNoBlock.pieceNo, blockNoBlock.count);
             }
             else if (findBlockSingle.blockIndex != -1)
             {
@@ -131,7 +132,7 @@ int main()
             {
                 find_blocks_move(currentUser, findBlockSingle.pieceNo, findBlockSingle.blockIndex, dice);
             }
-            else if (dice == 6 && players[currentUser].piecesInBase != 0 && standardCells[15].noOfPiece == 0)
+            else if (dice == 6 && players[currentUser].piecesInBase != 0 && standardCells[41].noOfPiece == 0)
             {
                 move_to_x(currentUser);
             }
@@ -141,9 +142,9 @@ int main()
             }
             else if (blockHunt.huntIndex != -1)
             {
-                block_capturing_move(currentUser, singleHunt, dice);
+                block_capturing_move(currentUser, blockHunt, dice);
             }
-            else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+            else if (singleNoBlock.pieceNo != -1 && singleNoBlock.count <= -1)
             {
                 standard_single_move(currentUser, singleNoBlock.pieceNo, dice);
             }
@@ -151,13 +152,13 @@ int main()
             {
                 single_capturing_move(currentUser, singleHunt, dice);
             }
-            else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+            else if (singleNoBlock.pieceNo != -1 && singleNoBlock.count > 0)
             {
                 blockable_single_move(currentUser, singleNoBlock.pieceNo, singleNoBlock.count);
             }
             else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
             {
-                blockable_block_move(currentUser, blockNoBlock.pieceNo, singleNoBlock.count);
+                blockable_block_move(currentUser, blockNoBlock.pieceNo, blockNoBlock.count);
             }
             else if (boxResults.boxIndex != -1)
             {
@@ -172,19 +173,19 @@ int main()
         {
             printf("YELLOW player rolled %d", dice);
 
-            if (dice == 6 && players[currentUser].piecesInBase != 0 && standardCells[28].noOfPiece == 0)
+            if (dice == 6 && players[currentUser].piecesInBase != 0 && standardCells[2].noOfPiece == 0)
             {
                 move_to_x(currentUser);
             }
             else if (blockHunt.huntIndex != -1)
             {
-                block_capturing_move(currentUser, singleHunt, dice);
+                block_capturing_move(currentUser, blockHunt, dice);
             }
             else if (singleHunt.huntIndex != -1)
             {
                 single_capturing_move(currentUser, singleHunt, dice);
             }
-            else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+            else if (singleNoBlock.pieceNo != -1 && singleNoBlock.count <= -1)
             {
                 standard_single_move(currentUser, singleNoBlock.pieceNo, dice);
             }
@@ -192,13 +193,13 @@ int main()
             {
                 standard_block_move(currentUser, blockNoBlock.pieceNo, dice);
             }
-            else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+            else if (singleNoBlock.pieceNo != -1 && singleNoBlock.count > 0)
             {
                 blockable_single_move(currentUser, singleNoBlock.pieceNo, singleNoBlock.count);
             }
             else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
             {
-                blockable_block_move(currentUser, blockNoBlock.pieceNo, singleNoBlock.count);
+                blockable_block_move(currentUser, blockNoBlock.pieceNo, blockNoBlock.count);
             }
             else if (findBlockSingle.blockIndex != -1)
             {
@@ -217,11 +218,11 @@ int main()
         {
             printf("BLUE player rolled %d", dice);
 
-            if (dice == 6 && players[currentUser].piecesInBase != 0 && standardCells[28].noOfPiece == 0)
+            if (dice == 6 && players[currentUser].piecesInBase != 0 && standardCells[15].noOfPiece == 0)
             {
                 move_to_x(currentUser);
             }
-            else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count <= -1)
+            else if (singleNoBlock.pieceNo != -1 && singleNoBlock.count <= -1)
             {
                 standard_single_move(currentUser, singleNoBlock.pieceNo, dice);
             }
@@ -235,19 +236,19 @@ int main()
             }
             else if (blockHunt.huntIndex != -1)
             {
-                block_capturing_move(currentUser, singleHunt, dice);
+                block_capturing_move(currentUser, blockHunt, dice);
             }
             else if (singleHunt.huntIndex != -1)
             {
                 single_capturing_move(currentUser, singleHunt, dice);
             }
-            else if (singleNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
+            else if (singleNoBlock.pieceNo != -1 && singleNoBlock.count > 0)
             {
                 blockable_single_move(currentUser, singleNoBlock.pieceNo, singleNoBlock.count);
             }
             else if (blockNoBlock.pieceNo != -1 && blockNoBlock.count > 0)
             {
-                blockable_block_move(currentUser, blockNoBlock.pieceNo, singleNoBlock.count);
+                blockable_block_move(currentUser, blockNoBlock.pieceNo, blockNoBlock.count);
             }
             else if (boxResults.boxIndex != -1)
             {
