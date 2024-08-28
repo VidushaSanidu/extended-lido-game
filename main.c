@@ -22,7 +22,7 @@ int main()
     initialize_board();
 
     // in game progress
-    while (winners <= 0)
+    while (winners == 0)
     {
         // count rounds
         if (currentUser == first) {
@@ -268,10 +268,10 @@ int main()
 
         rotateCount(&currentUser);
 
-        // if (rounds == 20)
-        // {
-        //     break;
-        // }
+        if (rounds == 20)
+        {
+            break;
+        }
     }
 
     return 0;

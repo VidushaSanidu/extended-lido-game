@@ -175,7 +175,7 @@ void single_move(PlayerColor index, int pieceIndex, int roll)
     }
     piece->position = (newPosition + STANDARD_CELLS) % STANDARD_CELLS;
     piece->blockDirection = -1;
-    if (standardCells[piece->position].type == MYSTERY)
+    if (piece->position >= 0 && piece->position < STANDARD_CELLS && standardCells[piece->position].type == MYSTERY)
     {
         handle_mystery(players[index].color, pieceIndex, roll_dice());
     }
@@ -372,7 +372,7 @@ HuntResult get_nearest_hunt_for_single(Player player, int max)
             if (player.pieces[i].direction == clock)
             {
                 target = player.pieces[i].position + max;
-                for (int j = player.pieces[i].position + 1; j <= max; j++)
+                for (int j = player.pieces[i].position + 1; j <= target; j++)
                 {
                     if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color)
                     {
@@ -384,7 +384,7 @@ HuntResult get_nearest_hunt_for_single(Player player, int max)
             else
             {
                 target = player.pieces[i].position - max;
-                for (int j = player.pieces[i].position - 1; j >= max; j--)
+                for (int j = player.pieces[i].position - 1; j >= target; j--)
                 {
                     if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color)
                     {
@@ -425,7 +425,7 @@ HuntResult get_nearest_hunt_for_block(Player player, int max)
             if (player.pieces[i].blockDirection == clock)
             {
                 target = player.pieces[i].position + max;
-                for (int j = player.pieces[i].position + 1; j <= max; j++)
+                for (int j = player.pieces[i].position + 1; j <= target; j++)
                 {
                     if (standardCells[j].noOfPiece > noOfPeices && standardCells[j].currentColor != player.color)
                     {
@@ -437,7 +437,7 @@ HuntResult get_nearest_hunt_for_block(Player player, int max)
             else
             {
                 target = player.pieces[i].position - max;
-                for (int j = player.pieces[i].position - 1; j >= max; j--)
+                for (int j = player.pieces[i].position - 1; j >= target; j--)
                 {
                     if (standardCells[j].noOfPiece > noOfPeices && standardCells[j].currentColor != player.color)
                     {
@@ -471,9 +471,11 @@ BlockedResult find_non_blockable_single(Player player, int max)
         {
             int isBlocked = false;
             int count = 0;
+            int target;
             if (player.pieces[i].direction == clock)
             {
-                for (int j = player.pieces[i].position + 1; j <= max; j++)
+                target = player.pieces[i].position + max;
+                for (int j = player.pieces[i].position + 1; j <= target; j++)
                 {
                     count++;
                     if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color)
@@ -486,7 +488,8 @@ BlockedResult find_non_blockable_single(Player player, int max)
             }
             else
             {
-                for (int j = player.pieces[i].position - 1; j >= max; j--)
+                target = player.pieces[i].position - max;
+                for (int j = player.pieces[i].position - 1; j >= target; j--)
                 {
                     count++;
                     if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color)
@@ -533,8 +536,10 @@ BlockedResult find_non_blockable_block(Player player, int max)
         {
             int countt = 0;
             int isBlocked = false;
+            int target;
             if (piece.blockDirection == clock)
             {
+                target = player.pieces[i].position + max / count;
                 for (int j = piece.position + 1; j <= max / count; j++)
                 {
                     countt++;
@@ -548,9 +553,11 @@ BlockedResult find_non_blockable_block(Player player, int max)
             }
             else
             {
-                countt++;
+                
+                target = player.pieces[i].position - max / count;
                 for (int j = piece.position - 1; j >= max / count; j--)
                 {
+                    countt++;
                     if (standardCells[j].noOfPiece > count && standardCells[j].currentColor != player.color)
                     {
                         isBlocked = true;
@@ -593,7 +600,7 @@ FindBlockResult find_blocks(Player player, int max)
             if (player.pieces[i].direction == clock)
             {
                 target = player.pieces[i].position + max;
-                for (int j = player.pieces[i].position + 1; j <= max; j++)
+                for (int j = player.pieces[i].position + 1; j <= target; j++)
                 {
                     if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color)
                     {
@@ -605,7 +612,7 @@ FindBlockResult find_blocks(Player player, int max)
             else
             {
                 target = player.pieces[i].position - max;
-                for (int j = player.pieces[i].position - 1; j >= max; j--)
+                for (int j = player.pieces[i].position - 1; j >= target; j--)
                 {
                     if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color)
                     {
@@ -642,7 +649,7 @@ BoxResult find_mystory_box(Player player, int max)
             if (player.pieces[i].direction == clock)
             {
                 target = player.pieces[i].position + max;
-                for (int j = player.pieces[i].position + 1; j <= max; j++)
+                for (int j = player.pieces[i].position + 1; j <= target; j++)
                 {
                     if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color)
                     {
@@ -654,7 +661,7 @@ BoxResult find_mystory_box(Player player, int max)
             else
             {
                 target = player.pieces[i].position - max;
-                for (int j = player.pieces[i].position - 1; j >= max; j--)
+                for (int j = player.pieces[i].position - 1; j >= target; j--)
                 {
                     if (standardCells[j].noOfPiece > 1 && standardCells[j].currentColor != player.color)
                     {
